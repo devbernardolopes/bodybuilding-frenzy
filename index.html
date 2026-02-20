@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -6,67 +5,292 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bodybuilding Frenzy Prototype</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/dexie@4/dist/dexie.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body class="min-h-screen bg-slate-950 text-slate-100">
-    <div id="toast-container" class="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(92vw,420px)] flex-col gap-2"></div>
-    <main class="mx-auto flex min-h-screen w-full max-w-7xl items-center justify-center p-4 sm:p-6">
-      <section id="home-screen" class="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl backdrop-blur sm:p-8">
-        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">Bodybuilding Frenzy</h1>
+    <div
+      id="toast-container"
+      class="pointer-events-none fixed right-4 top-4 z-50 flex w-[min(92vw,420px)] flex-col gap-2"
+    ></div>
+    <main
+      class="mx-auto flex min-h-screen w-full max-w-[96rem] items-center justify-center p-2 sm:p-3"
+    >
+      <section
+        id="home-screen"
+        class="w-full max-w-2xl rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl backdrop-blur sm:p-8"
+      >
+        <h1 class="text-3xl font-bold tracking-tight sm:text-4xl">
+          Bodybuilding Frenzy
+        </h1>
         <p class="mt-2 text-slate-300">Career management prototype</p>
+        <p id="auth-user-info" class="mt-1 text-xs text-slate-400">
+          Not logged in
+        </p>
         <div class="mt-8 grid gap-3">
-          <button id="new-game-btn" class="rounded-xl border border-emerald-500 bg-emerald-600 px-5 py-3 text-left font-semibold transition hover:bg-emerald-500">New Game</button>
-          <button id="continue-btn" class="rounded-xl border border-slate-600 bg-slate-700 px-5 py-3 text-left font-semibold transition hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50" disabled>Continue Game</button>
+          <button
+            id="login-google-btn"
+            onclick="loginWithGoogle()"
+            class="rounded-xl border border-sky-500 bg-sky-600 px-5 py-3 text-left font-semibold transition hover:bg-sky-500"
+          >
+            Login with Google
+          </button>
+          <button
+            id="logout-btn"
+            onclick="logoutUser()"
+            class="hidden rounded-xl border border-rose-500 bg-rose-600 px-5 py-3 text-left font-semibold transition hover:bg-rose-500"
+          >
+            Logout
+          </button>
+          <button
+            id="new-game-btn"
+            class="rounded-xl border border-emerald-500 bg-emerald-600 px-5 py-3 text-left font-semibold transition hover:bg-emerald-500"
+          >
+            New Game
+          </button>
+          <button
+            id="continue-btn"
+            class="rounded-xl border border-slate-600 bg-slate-700 px-5 py-3 text-left font-semibold transition hover:bg-slate-600 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled
+          >
+            Continue Game
+          </button>
         </div>
         <p id="home-status" class="mt-4 text-sm text-slate-400"></p>
       </section>
-      <section id="create-screen" class="hidden w-full rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-2xl backdrop-blur sm:p-6">
-        <div class="grid gap-6 lg:grid-cols-[minmax(360px,1fr),minmax(280px,420px)]">
+      <section
+        id="create-screen"
+        class="hidden w-full rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-2xl backdrop-blur sm:p-6"
+      >
+        <div
+          class="grid gap-6 lg:grid-cols-[minmax(360px,1fr),minmax(280px,420px)]"
+        >
           <div>
             <h2 class="text-2xl font-bold">New Character</h2>
-            <p class="mt-1 text-slate-300">Adjust attributes and body parts. Sprite updates in real-time.</p>
+            <p class="mt-1 text-slate-300">
+              Adjust attributes and body parts. Sprite updates in real-time.
+            </p>
             <form id="create-form" class="mt-5 grid gap-4">
               <label class="grid gap-1">
                 <span class="text-sm text-slate-300">Name</span>
-                <input id="character-name" type="text" required minlength="2" maxlength="24" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2" placeholder="Enter character name" />
+                <input
+                  id="character-name"
+                  type="text"
+                  required
+                  minlength="2"
+                  maxlength="24"
+                  class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2"
+                  placeholder="Enter character name"
+                />
               </label>
               <div class="grid gap-4 sm:grid-cols-2">
-                <label class="grid gap-1"><span class="text-sm text-slate-300">Gender</span><select id="character-gender" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></label>
-                <label class="grid gap-1"><span class="text-sm text-slate-300">Somatotype</span><select id="character-somatotype" class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2"><option value="ecto">Ectomorph</option><option value="meso">Mesomorph</option><option value="endo">Endomorph</option></select></label>
+                <label class="grid gap-1"
+                  ><span class="text-sm text-slate-300">Gender</span
+                  ><select
+                    id="character-gender"
+                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2"
+                  >
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select></label
+                >
+                <label class="grid gap-1"
+                  ><span class="text-sm text-slate-300">Somatotype</span
+                  ><select
+                    id="character-somatotype"
+                    class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 outline-none ring-emerald-400 transition focus:ring-2"
+                  >
+                    <option value="ecto">Ectomorph</option>
+                    <option value="meso">Mesomorph</option>
+                    <option value="endo">Endomorph</option>
+                  </select></label
+                >
               </div>
               <div id="core-attribute-controls" class="grid gap-3"></div>
               <div>
                 <h3 class="text-lg font-semibold">Body Parts</h3>
-                <p class="text-xs text-slate-400">50 = smaller, 150 = bigger, 100 = baseline</p>
+                <p class="text-xs text-slate-400">
+                  50 = smaller, 150 = bigger, 100 = baseline
+                </p>
                 <div id="body-part-controls" class="mt-3 grid gap-3"></div>
               </div>
               <div class="mt-2 flex flex-wrap gap-3">
-                <button type="submit" class="rounded-lg border border-emerald-500 bg-emerald-600 px-4 py-2 font-semibold transition hover:bg-emerald-500">Save Character</button>
-                <button id="cancel-create-btn" type="button" class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 font-semibold transition hover:bg-slate-600">Back</button>
+                <button
+                  type="submit"
+                  class="rounded-lg border border-emerald-500 bg-emerald-600 px-4 py-2 font-semibold transition hover:bg-emerald-500"
+                >
+                  Save Character
+                </button>
+                <button
+                  id="cancel-create-btn"
+                  type="button"
+                  class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 font-semibold transition hover:bg-slate-600"
+                >
+                  Back
+                </button>
               </div>
             </form>
             <p id="create-status" class="mt-3 text-sm text-slate-400"></p>
           </div>
-          <div class="self-start rounded-xl border border-slate-800 bg-slate-950/50 p-4 lg:sticky lg:top-4">
+          <div
+            class="self-start rounded-xl border border-slate-800 bg-slate-950/50 p-4 lg:sticky lg:top-4"
+          >
             <h3 class="text-lg font-semibold">Sprite Preview</h3>
             <div class="mt-3 flex justify-center">
-              <svg id="create-character-svg" viewBox="0 0 220 460" width="320" height="460" class="w-full max-w-[320px] rounded-lg bg-slate-950">
+              <svg
+                id="create-character-svg"
+                viewBox="0 0 220 460"
+                width="320"
+                height="460"
+                class="w-full max-w-[320px] rounded-lg bg-slate-950"
+              >
                 <g transform="translate(110 35)">
-                  <g data-role="posture"><g data-role="height-scale">
-                    <circle data-part="head" cx="0" cy="0" r="18" />
-                    <rect data-part="traps" x="-24" y="18" width="48" height="16" rx="8" />
-                    <ellipse data-part="shoulders" cx="0" cy="42" rx="40" ry="14" />
-                    <ellipse data-part="lats" cx="0" cy="82" rx="46" ry="34" />
-                    <rect data-part="torso" x="-26" y="30" width="52" height="96" rx="22" />
-                    <rect data-part="lowerBack" x="-20" y="106" width="40" height="30" rx="12" />
-                    <ellipse data-part="glutes" cx="0" cy="145" rx="30" ry="18" />
-                    <rect data-part="tricepsL" x="-58" y="40" width="16" height="56" rx="8" /><rect data-part="tricepsR" x="42" y="40" width="16" height="56" rx="8" />
-                    <rect data-part="bicepsL" x="-54" y="44" width="12" height="42" rx="6" /><rect data-part="bicepsR" x="42" y="44" width="12" height="42" rx="6" />
-                    <rect data-part="forearmL" x="-56" y="90" width="14" height="76" rx="7" /><rect data-part="forearmR" x="42" y="90" width="14" height="76" rx="7" />
-                    <rect data-part="hamstringsL" x="-28" y="156" width="20" height="94" rx="10" /><rect data-part="hamstringsR" x="8" y="156" width="20" height="94" rx="10" />
-                    <rect data-part="legsL" x="-30" y="152" width="24" height="124" rx="11" /><rect data-part="legsR" x="6" y="152" width="24" height="124" rx="11" />
-                    <rect data-part="calvesL" x="-28" y="252" width="20" height="86" rx="10" /><rect data-part="calvesR" x="8" y="252" width="20" height="86" rx="10" />
-                  </g></g>
+                  <g data-role="posture">
+                    <g data-role="height-scale">
+                      <circle data-part="head" cx="0" cy="0" r="18" />
+                      <rect
+                        data-part="traps"
+                        x="-24"
+                        y="18"
+                        width="48"
+                        height="16"
+                        rx="8"
+                      />
+                      <ellipse
+                        data-part="shoulders"
+                        cx="0"
+                        cy="42"
+                        rx="40"
+                        ry="14"
+                      />
+                      <ellipse
+                        data-part="lats"
+                        cx="0"
+                        cy="82"
+                        rx="46"
+                        ry="34"
+                      />
+                      <rect
+                        data-part="torso"
+                        x="-26"
+                        y="30"
+                        width="52"
+                        height="96"
+                        rx="22"
+                      />
+                      <rect
+                        data-part="lowerBack"
+                        x="-20"
+                        y="106"
+                        width="40"
+                        height="30"
+                        rx="12"
+                      />
+                      <ellipse
+                        data-part="glutes"
+                        cx="0"
+                        cy="145"
+                        rx="30"
+                        ry="18"
+                      />
+                      <rect
+                        data-part="tricepsL"
+                        x="-58"
+                        y="40"
+                        width="16"
+                        height="56"
+                        rx="8"
+                      />
+                      <rect
+                        data-part="tricepsR"
+                        x="42"
+                        y="40"
+                        width="16"
+                        height="56"
+                        rx="8"
+                      />
+                      <rect
+                        data-part="bicepsL"
+                        x="-54"
+                        y="44"
+                        width="12"
+                        height="42"
+                        rx="6"
+                      />
+                      <rect
+                        data-part="bicepsR"
+                        x="42"
+                        y="44"
+                        width="12"
+                        height="42"
+                        rx="6"
+                      />
+                      <rect
+                        data-part="forearmL"
+                        x="-56"
+                        y="90"
+                        width="14"
+                        height="76"
+                        rx="7"
+                      />
+                      <rect
+                        data-part="forearmR"
+                        x="42"
+                        y="90"
+                        width="14"
+                        height="76"
+                        rx="7"
+                      />
+                      <rect
+                        data-part="hamstringsL"
+                        x="-28"
+                        y="156"
+                        width="20"
+                        height="94"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="hamstringsR"
+                        x="8"
+                        y="156"
+                        width="20"
+                        height="94"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="legsL"
+                        x="-30"
+                        y="152"
+                        width="24"
+                        height="124"
+                        rx="11"
+                      />
+                      <rect
+                        data-part="legsR"
+                        x="6"
+                        y="152"
+                        width="24"
+                        height="124"
+                        rx="11"
+                      />
+                      <rect
+                        data-part="calvesL"
+                        x="-28"
+                        y="252"
+                        width="20"
+                        height="86"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="calvesR"
+                        x="8"
+                        y="252"
+                        width="20"
+                        height="86"
+                        rx="10"
+                      />
+                    </g>
+                  </g>
                 </g>
               </svg>
             </div>
@@ -74,82 +298,528 @@
           </div>
         </div>
       </section>
-      <section id="continue-screen" class="hidden w-full max-w-5xl rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl backdrop-blur">
+      <section
+        id="continue-screen"
+        class="hidden w-full max-w-5xl rounded-2xl border border-slate-800 bg-slate-900/70 p-6 shadow-2xl backdrop-blur"
+      >
         <h2 class="text-2xl font-bold">Continue Game</h2>
-        <p class="mt-1 text-slate-300">Select a saved character or delete one.</p>
+        <p class="mt-1 text-slate-300">
+          Select a saved character or delete one.
+        </p>
         <div class="mt-5 overflow-hidden rounded-xl border border-slate-800">
-          <div class="grid grid-cols-[1.5fr,1fr,1fr,auto] bg-slate-800/70 px-4 py-2 text-xs uppercase tracking-wide text-slate-300"><span>Character</span><span>Build</span><span>Status</span><span>Actions</span></div>
-          <div id="character-list" class="divide-y divide-slate-800 bg-slate-950/50"></div>
+          <div
+            class="grid grid-cols-[1.5fr,1fr,1fr,auto] bg-slate-800/70 px-4 py-2 text-xs uppercase tracking-wide text-slate-300"
+          >
+            <span>Character</span><span>Build</span><span>Status</span
+            ><span>Actions</span>
+          </div>
+          <div
+            id="character-list"
+            class="divide-y divide-slate-800 bg-slate-950/50"
+          ></div>
         </div>
         <p id="continue-status" class="mt-4 text-sm text-slate-400"></p>
-        <div class="mt-5"><button id="back-from-continue-btn" type="button" class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 font-semibold transition hover:bg-slate-600">Back</button></div>
+        <div class="mt-5">
+          <button
+            id="back-from-continue-btn"
+            type="button"
+            class="rounded-lg border border-slate-600 bg-slate-700 px-4 py-2 font-semibold transition hover:bg-slate-600"
+          >
+            Back
+          </button>
+        </div>
       </section>
-      <section id="game-screen" class="hidden w-full rounded-2xl border border-slate-800 bg-slate-900/70 p-4 shadow-2xl backdrop-blur sm:p-5">
-        <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/50 px-4 py-3">
-          <div><h2 id="game-character-name" class="text-xl font-bold">Character</h2><p id="game-character-meta" class="text-xs text-slate-400"></p></div>
+      <section
+        id="game-screen"
+        class="hidden w-full rounded-2xl border border-slate-800 bg-slate-900/70 px-2 py-3 shadow-2xl backdrop-blur sm:px-3 sm:py-4"
+      >
+        <div
+          class="sticky top-2 z-30 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/95 px-3 py-3 backdrop-blur"
+        >
+          <div>
+            <h2 id="game-character-name" class="text-xl font-bold">
+              Character
+            </h2>
+            <p id="game-character-meta" class="text-xs text-slate-400"></p>
+          </div>
+          <div class="flex gap-2 text-xs text-slate-200">
+            <div
+              class="rounded-lg border border-slate-700 bg-slate-900/90 px-3 py-1.5"
+            >
+              Money:
+              <span id="game-money" class="font-semibold text-emerald-300"
+                >$0</span
+              >
+            </div>
+            <div
+              class="rounded-lg border border-slate-700 bg-slate-900/90 px-3 py-1.5"
+            >
+              Date/Time:
+              <span id="game-datetime" class="font-semibold text-slate-100"
+                >-</span
+              >
+            </div>
+          </div>
           <div class="flex flex-wrap gap-2">
-            <button id="game-back-home-btn" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm font-semibold hover:bg-slate-600">Main Menu</button>
-            <button id="game-new-character-btn" class="rounded-md border border-emerald-500 bg-emerald-600 px-3 py-1.5 text-sm font-semibold hover:bg-emerald-500">New Character</button>
-            <button id="game-mute-btn" class="rounded-md border border-amber-500 bg-amber-600 px-3 py-1.5 text-sm font-semibold hover:bg-amber-500">Mute Sounds</button>
+            <button
+              id="game-back-home-btn"
+              class="rounded-md border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm font-semibold hover:bg-slate-600"
+            >
+              Main Menu
+            </button>
+            <button
+              id="game-new-character-btn"
+              class="rounded-md border border-emerald-500 bg-emerald-600 px-3 py-1.5 text-sm font-semibold hover:bg-emerald-500"
+            >
+              New Character
+            </button>
+            <button
+              id="game-mute-btn"
+              class="rounded-md border border-amber-500 bg-amber-600 px-3 py-1.5 text-sm font-semibold hover:bg-amber-500"
+            >
+              Mute Sounds
+            </button>
           </div>
         </div>
-        <div class="mt-4 grid gap-4 xl:grid-cols-[320px,1fr,340px]">
+        <div
+          class="mt-3 grid grid-cols-[minmax(170px,34%),minmax(0,1fr)] items-start gap-3"
+        >
           <aside class="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
             <div class="flex justify-center">
-              <svg id="game-character-svg" viewBox="0 0 220 460" width="290" height="430" class="w-full max-w-[280px] rounded-lg bg-slate-950">
+              <svg
+                id="game-character-svg"
+                viewBox="0 0 220 460"
+                width="290"
+                height="430"
+                class="w-full max-w-[220px] rounded-lg bg-slate-950"
+              >
                 <g transform="translate(110 35)">
-                  <g data-role="posture"><g data-role="height-scale">
-                    <circle data-part="head" cx="0" cy="0" r="18" />
-                    <rect data-part="traps" x="-24" y="18" width="48" height="16" rx="8" />
-                    <ellipse data-part="shoulders" cx="0" cy="42" rx="40" ry="14" />
-                    <ellipse data-part="lats" cx="0" cy="82" rx="46" ry="34" />
-                    <rect data-part="torso" x="-26" y="30" width="52" height="96" rx="22" />
-                    <rect data-part="lowerBack" x="-20" y="106" width="40" height="30" rx="12" />
-                    <ellipse data-part="glutes" cx="0" cy="145" rx="30" ry="18" />
-                    <rect data-part="tricepsL" x="-58" y="40" width="16" height="56" rx="8" /><rect data-part="tricepsR" x="42" y="40" width="16" height="56" rx="8" />
-                    <rect data-part="bicepsL" x="-54" y="44" width="12" height="42" rx="6" /><rect data-part="bicepsR" x="42" y="44" width="12" height="42" rx="6" />
-                    <rect data-part="forearmL" x="-56" y="90" width="14" height="76" rx="7" /><rect data-part="forearmR" x="42" y="90" width="14" height="76" rx="7" />
-                    <rect data-part="hamstringsL" x="-28" y="156" width="20" height="94" rx="10" /><rect data-part="hamstringsR" x="8" y="156" width="20" height="94" rx="10" />
-                    <rect data-part="legsL" x="-30" y="152" width="24" height="124" rx="11" /><rect data-part="legsR" x="6" y="152" width="24" height="124" rx="11" />
-                    <rect data-part="calvesL" x="-28" y="252" width="20" height="86" rx="10" /><rect data-part="calvesR" x="8" y="252" width="20" height="86" rx="10" />
-                  </g></g>
+                  <g data-role="posture">
+                    <g data-role="height-scale">
+                      <circle data-part="head" cx="0" cy="0" r="18" />
+                      <rect
+                        data-part="traps"
+                        x="-24"
+                        y="18"
+                        width="48"
+                        height="16"
+                        rx="8"
+                      />
+                      <ellipse
+                        data-part="shoulders"
+                        cx="0"
+                        cy="42"
+                        rx="40"
+                        ry="14"
+                      />
+                      <ellipse
+                        data-part="lats"
+                        cx="0"
+                        cy="82"
+                        rx="46"
+                        ry="34"
+                      />
+                      <rect
+                        data-part="torso"
+                        x="-26"
+                        y="30"
+                        width="52"
+                        height="96"
+                        rx="22"
+                      />
+                      <rect
+                        data-part="lowerBack"
+                        x="-20"
+                        y="106"
+                        width="40"
+                        height="30"
+                        rx="12"
+                      />
+                      <ellipse
+                        data-part="glutes"
+                        cx="0"
+                        cy="145"
+                        rx="30"
+                        ry="18"
+                      />
+                      <rect
+                        data-part="tricepsL"
+                        x="-58"
+                        y="40"
+                        width="16"
+                        height="56"
+                        rx="8"
+                      />
+                      <rect
+                        data-part="tricepsR"
+                        x="42"
+                        y="40"
+                        width="16"
+                        height="56"
+                        rx="8"
+                      />
+                      <rect
+                        data-part="bicepsL"
+                        x="-54"
+                        y="44"
+                        width="12"
+                        height="42"
+                        rx="6"
+                      />
+                      <rect
+                        data-part="bicepsR"
+                        x="42"
+                        y="44"
+                        width="12"
+                        height="42"
+                        rx="6"
+                      />
+                      <rect
+                        data-part="forearmL"
+                        x="-56"
+                        y="90"
+                        width="14"
+                        height="76"
+                        rx="7"
+                      />
+                      <rect
+                        data-part="forearmR"
+                        x="42"
+                        y="90"
+                        width="14"
+                        height="76"
+                        rx="7"
+                      />
+                      <rect
+                        data-part="hamstringsL"
+                        x="-28"
+                        y="156"
+                        width="20"
+                        height="94"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="hamstringsR"
+                        x="8"
+                        y="156"
+                        width="20"
+                        height="94"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="legsL"
+                        x="-30"
+                        y="152"
+                        width="24"
+                        height="124"
+                        rx="11"
+                      />
+                      <rect
+                        data-part="legsR"
+                        x="6"
+                        y="152"
+                        width="24"
+                        height="124"
+                        rx="11"
+                      />
+                      <rect
+                        data-part="calvesL"
+                        x="-28"
+                        y="252"
+                        width="20"
+                        height="86"
+                        rx="10"
+                      />
+                      <rect
+                        data-part="calvesR"
+                        x="8"
+                        y="252"
+                        width="20"
+                        height="86"
+                        rx="10"
+                      />
+                    </g>
+                  </g>
                 </g>
               </svg>
             </div>
-            <div class="mt-3 rounded-lg border border-slate-800 bg-slate-900/80 p-2"><h3 class="text-sm font-semibold">Core Attributes</h3><div id="game-core-rows" class="mt-2 grid gap-1"></div></div>
-            <div class="mt-3 rounded-lg border border-slate-800 bg-slate-900/80 p-2"><h3 class="text-sm font-semibold">Muscle Parts</h3><div id="game-part-rows" class="mt-2 grid gap-1"></div></div>
+            <div
+              class="mt-3 rounded-lg border border-slate-800 bg-slate-900/80 p-2"
+            >
+              <div id="game-tabs" class="grid grid-cols-2 gap-2"></div>
+              <div
+                id="game-tab-content"
+                class="mt-3 rounded-lg border border-slate-800 bg-slate-950/50 p-2"
+              ></div>
+            </div>
           </aside>
-          <section class="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
+          <section
+            class="rounded-xl border border-slate-800 bg-slate-950/60 p-4"
+          >
             <h3 class="text-lg font-semibold">Main Interaction Area</h3>
-            <p class="mt-1 text-sm text-slate-400">Placeholder for your gameplay loop (map, locations, actions, options, events).</p>
-            <div class="mt-4 rounded-lg border border-slate-800 bg-slate-900/80 p-3">
+            <p class="mt-1 text-sm text-slate-400">
+              Placeholder for your gameplay loop (map, locations, actions,
+              options, events).
+            </p>
+            <div
+              class="mt-4 rounded-lg border border-slate-800 bg-slate-900/80 p-3"
+            >
               <h4 class="text-sm font-semibold">Quick Simulation Actions</h4>
-              <p class="text-xs text-slate-400">Temporary buttons for autosave, toasts, and stat color tests.</p>
+              <p class="text-xs text-slate-400">
+                Temporary buttons for autosave, toasts, and stat color tests.
+              </p>
               <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                <button data-action="upper" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Upper Body Workout</button>
-                <button data-action="legs" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Leg Day</button>
-                <button data-action="bulk" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Bulk Meal Plan</button>
-                <button data-action="cut" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Cutting Plan</button>
-                <button data-action="test" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Inject Testosterone</button>
-                <button data-action="nextDay" class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600">Advance 1 Day</button>
+                <button
+                  data-action="upper"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Upper Body Workout
+                </button>
+                <button
+                  data-action="legs"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Leg Day
+                </button>
+                <button
+                  data-action="bulk"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Bulk Meal Plan
+                </button>
+                <button
+                  data-action="cut"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Cutting Plan
+                </button>
+                <button
+                  data-action="test"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Inject Testosterone
+                </button>
+                <button
+                  data-action="nextDay"
+                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
+                >
+                  Advance 1 Day
+                </button>
               </div>
             </div>
           </section>
-          <aside class="rounded-xl border border-slate-800 bg-slate-950/60 p-3">
-            <div id="game-tabs" class="grid grid-cols-2 gap-2"></div>
-            <div id="game-tab-content" class="mt-3 rounded-lg border border-slate-800 bg-slate-900/80 p-3"></div>
-          </aside>
         </div>
-        <div class="mt-4 rounded-lg border border-slate-800 bg-slate-950/50 px-4 py-2 text-sm text-slate-300">In-game Date: <span id="game-date" class="font-semibold text-slate-100">-</span></div>
       </section>
     </main>
     <script>
-      const db = new Dexie("bodybuilding_frenzy_db");
-      db.version(1).stores({ settings: "key", characters: "++id, name, active, createdAt" });
-      const PROCEDURAL_TEMPLATE = { core: { age: { label: "Age", min: 14, max: 70, step: 1, default: 25, suffix: " yrs" }, ethnicity: { label: "Ethnicity", min: 0, max: 100, step: 1, default: 40, suffix: "%" }, height: { label: "Height", min: 145, max: 205, step: 1, default: 178, suffix: " cm" }, weight: { label: "Weight", min: 45, max: 140, step: 1, default: 82, suffix: " kg" } }, bodyParts: { calves: { label: "Calves", min: 50, max: 150, step: 1, default: 100 }, hamstrings: { label: "Hamstrings", min: 50, max: 150, step: 1, default: 100 }, triceps: { label: "Triceps", min: 50, max: 150, step: 1, default: 100 }, biceps: { label: "Biceps", min: 50, max: 150, step: 1, default: 100 }, forearms: { label: "Forearms", min: 50, max: 150, step: 1, default: 100 }, legs: { label: "Legs", min: 50, max: 150, step: 1, default: 100 }, glutes: { label: "Glutes", min: 50, max: 150, step: 1, default: 100 }, traps: { label: "Traps", min: 50, max: 150, step: 1, default: 100 }, shoulders: { label: "Shoulders", min: 50, max: 150, step: 1, default: 100 }, lats: { label: "Lats", min: 50, max: 150, step: 1, default: 100 }, lowerBack: { label: "Lower back", min: 50, max: 150, step: 1, default: 100 } } };
-      const SOMATOTYPE_PROFILE = { ecto: { limb: 0.9, torso: 0.9, fat: 0.8 }, meso: { limb: 1.08, torso: 1.05, fat: 1.0 }, endo: { limb: 1.0, torso: 1.18, fat: 1.28 } };
-      const GENDER_PROFILE = { male: { shoulder: 1.12, hip: 0.94 }, female: { shoulder: 0.95, hip: 1.15 }, other: { shoulder: 1.02, hip: 1.02 } };
-      const TAB_CONFIG = [{ key: "economy", label: "Economy" }, { key: "drugs", label: "Drugs" }, { key: "health", label: "Health" }, { key: "hormones", label: "Hormones" }, { key: "federations", label: "Federations" }];
+      const SUPABASE_URL = "https://bnuvaqzarneofklqkgic.supabase.co";
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_QGPBAanbu2KZGQtkpJcBwQ_OksgP_3o";
+
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY,
+      );
+      window.supabaseClient = supabaseClient;
+
+      const {
+        data: { subscription },
+      } = supabaseClient.auth.onAuthStateChange((event, session) => {
+        console.log("Auth event:", event, session);
+        applyAuthUi(session);
+      });
+
+      window.isUserLoggedIn = false;
+      window.currentUser = null;
+
+      function applyAuthUi(session) {
+        const loggedIn = Boolean(session?.user);
+        window.isUserLoggedIn = loggedIn;
+        window.currentUser = session?.user ?? null;
+
+        const loginBtn = document.getElementById("login-google-btn");
+        const logoutBtn = document.getElementById("logout-btn");
+        const newGameBtn = document.getElementById("new-game-btn");
+        const continueBtn = document.getElementById("continue-btn");
+        const authUserInfo = document.getElementById("auth-user-info");
+
+        if (loginBtn) loginBtn.classList.toggle("hidden", loggedIn);
+        if (logoutBtn) logoutBtn.classList.toggle("hidden", !loggedIn);
+        if (newGameBtn) newGameBtn.disabled = !loggedIn;
+        if (continueBtn && !loggedIn) continueBtn.disabled = true;
+        if (authUserInfo) {
+          authUserInfo.textContent = loggedIn
+            ? `Logged in as ${session.user.email ?? session.user.id}`
+            : "Not logged in";
+        }
+
+        if (typeof window.refreshHomeState === "function") {
+          window.refreshHomeState();
+        }
+        if (typeof window.refreshMuteState === "function") {
+          window.refreshMuteState();
+        }
+      }
+
+      window.loginWithGoogle = async function loginWithGoogle() {
+        await supabaseClient.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: window.location.origin,
+          },
+        });
+      };
+
+      window.logoutUser = async function logoutUser() {
+        await supabaseClient.auth.signOut();
+      };
+
+      supabaseClient.auth.getSession().then(({ data }) => {
+        applyAuthUi(data?.session ?? null);
+      });
+    </script>
+    <script>
+      const PROCEDURAL_TEMPLATE = {
+        core: {
+          age: {
+            label: "Age",
+            min: 14,
+            max: 70,
+            step: 1,
+            default: 25,
+            suffix: " yrs",
+          },
+          ethnicity: {
+            label: "Ethnicity",
+            min: 0,
+            max: 100,
+            step: 1,
+            default: 40,
+            suffix: "%",
+          },
+          height: {
+            label: "Height",
+            min: 145,
+            max: 205,
+            step: 1,
+            default: 178,
+            suffix: " cm",
+          },
+          weight: {
+            label: "Weight",
+            min: 45,
+            max: 140,
+            step: 1,
+            default: 82,
+            suffix: " kg",
+          },
+        },
+        bodyParts: {
+          calves: { label: "Calves", min: 50, max: 150, step: 1, default: 100 },
+          hamstrings: {
+            label: "Hamstrings",
+            min: 50,
+            max: 150,
+            step: 1,
+            default: 100,
+          },
+          triceps: {
+            label: "Triceps",
+            min: 50,
+            max: 150,
+            step: 1,
+            default: 100,
+          },
+          biceps: { label: "Biceps", min: 50, max: 150, step: 1, default: 100 },
+          forearms: {
+            label: "Forearms",
+            min: 50,
+            max: 150,
+            step: 1,
+            default: 100,
+          },
+          legs: { label: "Legs", min: 50, max: 150, step: 1, default: 100 },
+          glutes: { label: "Glutes", min: 50, max: 150, step: 1, default: 100 },
+          traps: { label: "Traps", min: 50, max: 150, step: 1, default: 100 },
+          shoulders: {
+            label: "Shoulders",
+            min: 50,
+            max: 150,
+            step: 1,
+            default: 100,
+          },
+          lats: { label: "Lats", min: 50, max: 150, step: 1, default: 100 },
+          lowerBack: {
+            label: "Lower back",
+            min: 50,
+            max: 150,
+            step: 1,
+            default: 100,
+          },
+        },
+      };
+      const SOMATOTYPE_PROFILE = {
+        ecto: { limb: 0.9, torso: 0.9, fat: 0.8 },
+        meso: { limb: 1.08, torso: 1.05, fat: 1.0 },
+        endo: { limb: 1.0, torso: 1.18, fat: 1.28 },
+      };
+      const GENDER_PROFILE = {
+        male: { shoulder: 1.12, hip: 0.94 },
+        female: { shoulder: 0.95, hip: 1.15 },
+        other: { shoulder: 1.02, hip: 1.02 },
+      };
+      const TAB_CONFIG = [
+        { key: "core", label: "Core" },
+        { key: "muscles", label: "Muscles" },
+        { key: "drugs", label: "Drugs" },
+        { key: "health", label: "Health" },
+        { key: "hormones", label: "Hormones" },
+        { key: "federations", label: "Federations" },
+      ];
+      const ENTITY_CONFIG = {
+        drugs: {
+          table: "drug",
+          characterTable: "character_drug",
+          fk: "drug_id",
+          keyField: "key",
+          label: "Current Drugs/Hormones",
+        },
+        hormones: {
+          table: "hormone",
+          characterTable: "character_hormone",
+          fk: "hormone_id",
+          keyField: "key",
+          label: "Hormone Levels",
+        },
+        illnesses: {
+          table: "illness",
+          characterTable: "character_illness",
+          fk: "illness_id",
+          keyField: "key",
+          label: "Illnesses",
+        },
+        injuries: {
+          table: "injury",
+          characterTable: "character_injury",
+          fk: "injury_id",
+          keyField: "key",
+          label: "Injuries",
+        },
+        federations: {
+          table: "federation",
+          characterTable: "character_federation",
+          fk: "federation_id",
+          keyField: "key",
+          label: "Federations",
+        },
+      };
+      const catalogs = {
+        drugs: [],
+        hormones: [],
+        illnesses: [],
+        injuries: [],
+        federations: [],
+      };
       const ui = {
         toastContainer: document.getElementById("toast-container"),
         homeScreen: document.getElementById("home-screen"),
@@ -162,8 +832,12 @@
         createForm: document.getElementById("create-form"),
         characterNameInput: document.getElementById("character-name"),
         characterGenderInput: document.getElementById("character-gender"),
-        characterSomatotypeInput: document.getElementById("character-somatotype"),
-        coreAttributeControls: document.getElementById("core-attribute-controls"),
+        characterSomatotypeInput: document.getElementById(
+          "character-somatotype",
+        ),
+        coreAttributeControls: document.getElementById(
+          "core-attribute-controls",
+        ),
         bodyPartControls: document.getElementById("body-part-controls"),
         createStatus: document.getElementById("create-status"),
         cancelCreateBtn: document.getElementById("cancel-create-btn"),
@@ -176,22 +850,72 @@
         gameBackHomeBtn: document.getElementById("game-back-home-btn"),
         gameNewCharacterBtn: document.getElementById("game-new-character-btn"),
         gameMuteBtn: document.getElementById("game-mute-btn"),
-        gameCoreRows: document.getElementById("game-core-rows"),
-        gamePartRows: document.getElementById("game-part-rows"),
-        gameDate: document.getElementById("game-date"),
+        gameMoney: document.getElementById("game-money"),
+        gameDateTime: document.getElementById("game-datetime"),
         gameTabs: document.getElementById("game-tabs"),
         gameTabContent: document.getElementById("game-tab-content"),
       };
-      const cloneData = (v) => (typeof structuredClone === "function" ? structuredClone(v) : JSON.parse(JSON.stringify(v)));
-      const escapeHtml = (v) => String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+      const cloneData = (v) =>
+        typeof structuredClone === "function"
+          ? structuredClone(v)
+          : JSON.parse(JSON.stringify(v));
+      const escapeHtml = (v) =>
+        String(v)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+      async function getUserSetting(key) {
+        if (!window.currentUser?.id) return null;
+        const { data, error } = await window.supabaseClient
+          .from("user_setting")
+          .select("value")
+          .eq("user_id", window.currentUser.id)
+          .eq("key", key)
+          .maybeSingle();
+        if (error) throw error;
+        return data ? data.value : null;
+      }
+
+      async function setUserSetting(key, value) {
+        if (!window.currentUser?.id) return;
+        const { error } = await window.supabaseClient
+          .from("user_setting")
+          .upsert(
+            { user_id: window.currentUser.id, key, value },
+            { onConflict: "user_id,key" },
+          );
+        if (error) throw error;
+      }
+
+      async function loadCatalogs() {
+        const jobs = Object.entries(ENTITY_CONFIG).map(async ([entity, cfg]) => {
+          const { data, error } = await window.supabaseClient
+            .from(cfg.table)
+            .select("id,key,name")
+            .eq("active", true)
+            .order("name", { ascending: true });
+          if (error) throw error;
+          catalogs[entity] = data || [];
+        });
+        await Promise.all(jobs);
+      }
       function getDefaultFeatures() {
         const bodyParts = {};
-        Object.entries(PROCEDURAL_TEMPLATE.bodyParts).forEach(([k, m]) => (bodyParts[k] = m.default));
+        Object.entries(PROCEDURAL_TEMPLATE.bodyParts).forEach(
+          ([k, m]) => (bodyParts[k] = m.default),
+        );
         return { age: 25, ethnicity: 40, height: 178, weight: 82, bodyParts };
       }
       function getDefaultGameState() {
-        return { money: 1200, inGameDate: "2026-01-01", drugs: { testosterone: 0, decaDurabolin: 0, hgh: 0, igf1: 0 }, illnesses: ["None"], injuries: ["None"], hormones: { cortisol: 45, testosterone: 55, growthHormone: 50 }, federations: ["None"] };
+        return {
+          money: 1200,
+          inGameDate: "2026-01-01",
+          inGameTime: "08:00",
+        };
       }
       function normalizeCharacter(raw) {
         const fallback = getDefaultFeatures();
@@ -201,14 +925,145 @@
           ...raw,
           gender: raw.gender || "other",
           somatotype: raw.somatotype || "meso",
-          features: { age: features.age ?? fallback.age, ethnicity: features.ethnicity ?? fallback.ethnicity, height: features.height ?? fallback.height, weight: features.weight ?? fallback.weight, bodyParts: { ...fallback.bodyParts, ...(features.bodyParts || {}) } },
-          gameState: { ...getDefaultGameState(), ...state, drugs: { ...getDefaultGameState().drugs, ...(state.drugs || {}) }, hormones: { ...getDefaultGameState().hormones, ...(state.hormones || {}) }, illnesses: Array.isArray(state.illnesses) ? state.illnesses : ["None"], injuries: Array.isArray(state.injuries) ? state.injuries : ["None"], federations: Array.isArray(state.federations) ? state.federations : ["None"] },
+          features: {
+            age: features.age ?? fallback.age,
+            ethnicity: features.ethnicity ?? fallback.ethnicity,
+            height: features.height ?? fallback.height,
+            weight: features.weight ?? fallback.weight,
+            bodyParts: { ...fallback.bodyParts, ...(features.bodyParts || {}) },
+          },
+          gameState: {
+            ...getDefaultGameState(),
+            ...state,
+            inGameTime: state.inGameTime || getDefaultGameState().inGameTime,
+          },
+          drugs: raw.drugs || {},
+          hormones: raw.hormones || {},
+          illnesses: raw.illnesses || [],
+          injuries: raw.injuries || [],
+          federations: raw.federations || [],
         };
+      }
+
+      function mapDbCharacter(row) {
+        return normalizeCharacter({
+          id: row.id,
+          name: row.name,
+          createdAt: row.created_at,
+          user_id: row.user_id,
+          gender: row.gender,
+          somatotype: row.somatotype,
+          active: Boolean(row.active),
+          features: row.features || undefined,
+          gameState: row.game_state || undefined,
+        });
+      }
+
+      async function loadCharacterRelations(character) {
+        if (!catalogs.drugs.length && window.isUserLoggedIn) {
+          await loadCatalogs();
+        }
+        const jobs = Object.entries(ENTITY_CONFIG).map(async ([entity, cfg]) => {
+          const { data, error } = await window.supabaseClient
+            .from(cfg.characterTable)
+            .select(`value, ${cfg.table}:${cfg.fk}(key,name)`)
+            .eq("character_id", character.id);
+          if (error) throw error;
+          return [entity, data || []];
+        });
+        const results = await Promise.all(jobs);
+
+        character.drugs = {};
+        character.hormones = {};
+        character.illnesses = [];
+        character.injuries = [];
+        character.federations = [];
+
+        results.forEach(([entity, rows]) => {
+          if (entity === "drugs" || entity === "hormones") {
+            const target = entity === "drugs" ? character.drugs : character.hormones;
+            rows.forEach((row) => {
+              if (!row[cfgTableName(entity)]?.key) return;
+              target[row[cfgTableName(entity)].key] = Number(row.value || 0);
+            });
+          } else {
+            const list = rows
+              .map((row) => row[cfgTableName(entity)]?.name)
+              .filter(Boolean);
+            character[entity] = list;
+          }
+        });
+
+        catalogs.drugs.forEach((item) => {
+          if (!Number.isFinite(Number(character.drugs[item.key]))) {
+            character.drugs[item.key] = 0;
+          }
+        });
+        catalogs.hormones.forEach((item) => {
+          if (!Number.isFinite(Number(character.hormones[item.key]))) {
+            character.hormones[item.key] = 0;
+          }
+        });
+      }
+
+      function cfgTableName(entity) {
+        return ENTITY_CONFIG[entity].table;
+      }
+
+      async function saveEntityValue(characterId, entity, key, value) {
+        const cfg = ENTITY_CONFIG[entity];
+        const def = catalogs[entity].find((item) => item.key === key);
+        if (!def) return;
+        const payload = {
+          character_id: characterId,
+          [cfg.fk]: def.id,
+          value,
+        };
+        const { error } = await window.supabaseClient
+          .from(cfg.characterTable)
+          .upsert(payload, { onConflict: `character_id,${cfg.fk}` });
+        if (error) throw error;
+      }
+
+      function getCurrentUserIdOrThrow() {
+        const id = window.currentUser?.id;
+        if (!id) throw new Error("User not logged in");
+        return id;
+      }
+
+      async function fetchUserCharacters() {
+        const userId = getCurrentUserIdOrThrow();
+        const { data, error } = await window.supabaseClient
+          .from("character")
+          .select("*")
+          .eq("user_id", userId)
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return (data || []).map(mapDbCharacter);
+      }
+
+      async function upsertActiveCharacterRow(character) {
+        const userId = getCurrentUserIdOrThrow();
+        const { error } = await window.supabaseClient
+          .from("character")
+          .update({
+            name: character.name,
+            gender: character.gender,
+            somatotype: character.somatotype,
+            active: character.active,
+            features: character.features,
+            game_state: character.gameState,
+          })
+          .eq("id", character.id)
+          .eq("user_id", userId);
+        if (error) throw error;
       }
       function getSvgParts(svgId) {
         const root = document.getElementById(svgId);
         const map = {};
-        root.querySelectorAll("[data-part]").forEach((el) => (map[el.dataset.part] = el));
+        root
+          .querySelectorAll("[data-part]")
+          .forEach((el) => (map[el.dataset.part] = el));
         map.heightScale = root.querySelector('[data-role="height-scale"]');
         map.posture = root.querySelector('[data-role="posture"]');
         map.root = root;
@@ -219,215 +1074,687 @@
       let createFeatures = getDefaultFeatures();
       let activeCharacter = null;
       let isMuted = false;
-      let activeTab = "economy";
+      let activeTab = "core";
+      const tabBadges = Object.fromEntries(
+        TAB_CONFIG.map((tab) => [tab.key, 0]),
+      );
       const statLineMap = new Map();
       function setVisibleScreen(name) {
-        ui.homeScreen.classList.add("hidden"); ui.createScreen.classList.add("hidden"); ui.continueScreen.classList.add("hidden"); ui.gameScreen.classList.add("hidden");
+        ui.homeScreen.classList.add("hidden");
+        ui.createScreen.classList.add("hidden");
+        ui.continueScreen.classList.add("hidden");
+        ui.gameScreen.classList.add("hidden");
         if (name === "home") ui.homeScreen.classList.remove("hidden");
         if (name === "create") ui.createScreen.classList.remove("hidden");
         if (name === "continue") ui.continueScreen.classList.remove("hidden");
         if (name === "game") ui.gameScreen.classList.remove("hidden");
       }
       function showToast(message, tone = "neutral") {
-        const toneClasses = { good: "border-emerald-500/50 bg-emerald-900/60", bad: "border-rose-500/50 bg-rose-900/60", neutral: "border-slate-700 bg-slate-900/95" };
+        const toneClasses = {
+          good: "border-emerald-500/50 bg-emerald-900/60",
+          bad: "border-rose-500/50 bg-rose-900/60",
+          neutral: "border-slate-700 bg-slate-900/95",
+        };
         const toast = document.createElement("div");
         toast.className = `rounded-lg border px-3 py-2 text-sm shadow-lg ${toneClasses[tone] || toneClasses.neutral}`;
         toast.textContent = message;
         ui.toastContainer.appendChild(toast);
-        setTimeout(() => { toast.classList.add("opacity-0", "transition", "duration-300"); setTimeout(() => toast.remove(), 320); }, 2200);
+        setTimeout(() => {
+          toast.classList.add("opacity-0", "transition", "duration-300");
+          setTimeout(() => toast.remove(), 320);
+        }, 2200);
       }
       function flashLine(path, delta) {
         const row = statLineMap.get(path);
         if (!row) return;
-        row.classList.remove("text-emerald-300", "text-rose-300", "bg-emerald-500/10", "bg-rose-500/10");
+        row.classList.remove(
+          "text-emerald-300",
+          "text-rose-300",
+          "bg-emerald-500/10",
+          "bg-rose-500/10",
+        );
         const good = delta > 0;
         row.classList.add(good ? "text-emerald-300" : "text-rose-300");
         row.classList.add(good ? "bg-emerald-500/10" : "bg-rose-500/10");
-        setTimeout(() => row.classList.remove("text-emerald-300", "text-rose-300", "bg-emerald-500/10", "bg-rose-500/10"), 1300);
+        setTimeout(
+          () =>
+            row.classList.remove(
+              "text-emerald-300",
+              "text-rose-300",
+              "bg-emerald-500/10",
+              "bg-rose-500/10",
+            ),
+          1300,
+        );
       }
-      const sliderRow = (id, label, min, max, step, value, suffix) => `<label class="grid gap-1"><div class="flex items-center justify-between text-sm text-slate-300"><span>${label}</span><span id="${id}-value">${value}${suffix}</span></div><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" class="w-full" /></label>`;
+      const sliderRow = (id, label, min, max, step, value, suffix) =>
+        `<label class="grid gap-1"><div class="flex items-center justify-between text-sm text-slate-300"><span>${label}</span><span id="${id}-value">${value}${suffix}</span></div><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" class="w-full" /></label>`;
       function renderProceduralControls() {
-        ui.coreAttributeControls.innerHTML = Object.entries(PROCEDURAL_TEMPLATE.core).map(([k, m]) => sliderRow(`core-${k}`, m.label, m.min, m.max, m.step, m.default, m.suffix)).join("");
-        ui.bodyPartControls.innerHTML = Object.entries(PROCEDURAL_TEMPLATE.bodyParts).map(([k, m]) => sliderRow(`part-${k}`, m.label, m.min, m.max, m.step, m.default, "")).join("");
+        ui.coreAttributeControls.innerHTML = Object.entries(
+          PROCEDURAL_TEMPLATE.core,
+        )
+          .map(([k, m]) =>
+            sliderRow(
+              `core-${k}`,
+              m.label,
+              m.min,
+              m.max,
+              m.step,
+              m.default,
+              m.suffix,
+            ),
+          )
+          .join("");
+        ui.bodyPartControls.innerHTML = Object.entries(
+          PROCEDURAL_TEMPLATE.bodyParts,
+        )
+          .map(([k, m]) =>
+            sliderRow(
+              `part-${k}`,
+              m.label,
+              m.min,
+              m.max,
+              m.step,
+              m.default,
+              "",
+            ),
+          )
+          .join("");
       }
       function updateSvg(map, character) {
         const f = character.features;
-        const soma = SOMATOTYPE_PROFILE[character.somatotype] || SOMATOTYPE_PROFILE.meso;
+        const soma =
+          SOMATOTYPE_PROFILE[character.somatotype] || SOMATOTYPE_PROFILE.meso;
         const gender = GENDER_PROFILE[character.gender] || GENDER_PROFILE.other;
         const ageT = Math.min(1, Math.max(0, (f.age - 20) / 40));
         const heightScale = f.height / 180;
         const fatFactor = 1 + ((f.weight - 45) / 95) * 0.3 * soma.fat;
         const partScale = (v, c = 0.005) => 1 + (v - 100) * c;
         map.heightScale.setAttribute("transform", `scale(1,${heightScale})`);
-        map.posture.setAttribute("transform", `skewX(${ageT * 4}) translate(0 ${ageT * 6})`);
-        map.shoulders.setAttribute("transform", `scale(${partScale(f.bodyParts.shoulders) * gender.shoulder},1)`);
-        map.lats.setAttribute("transform", `scale(${partScale(f.bodyParts.lats) * soma.torso},${fatFactor})`);
-        map.traps.setAttribute("transform", `scale(${partScale(f.bodyParts.traps, 0.006)},1)`);
-        map.lowerBack.setAttribute("transform", `scale(${partScale(f.bodyParts.lowerBack)},1)`);
-        map.glutes.setAttribute("transform", `scale(${partScale(f.bodyParts.glutes) * gender.hip},1)`);
-        map.torso.setAttribute("transform", `scale(${(soma.torso + (f.weight - 82) * 0.002) * 0.98},${fatFactor})`);
-        [["tricepsL", "tricepsR", "triceps"], ["bicepsL", "bicepsR", "biceps"], ["forearmL", "forearmR", "forearms"], ["hamstringsL", "hamstringsR", "hamstrings"], ["legsL", "legsR", "legs"], ["calvesL", "calvesR", "calves"]].forEach(([l, r, p]) => {
-          const scale = p === "legs" ? partScale(f.bodyParts[p]) * gender.hip : partScale(f.bodyParts[p]) * (["triceps", "biceps", "forearms"].includes(p) ? soma.limb : 1);
-          map[l].setAttribute("transform", `scale(${scale},1)`); map[r].setAttribute("transform", `scale(${scale},1)`);
+        map.posture.setAttribute(
+          "transform",
+          `skewX(${ageT * 4}) translate(0 ${ageT * 6})`,
+        );
+        map.shoulders.setAttribute(
+          "transform",
+          `scale(${partScale(f.bodyParts.shoulders) * gender.shoulder},1)`,
+        );
+        map.lats.setAttribute(
+          "transform",
+          `scale(${partScale(f.bodyParts.lats) * soma.torso},${fatFactor})`,
+        );
+        map.traps.setAttribute(
+          "transform",
+          `scale(${partScale(f.bodyParts.traps, 0.006)},1)`,
+        );
+        map.lowerBack.setAttribute(
+          "transform",
+          `scale(${partScale(f.bodyParts.lowerBack)},1)`,
+        );
+        map.glutes.setAttribute(
+          "transform",
+          `scale(${partScale(f.bodyParts.glutes) * gender.hip},1)`,
+        );
+        map.torso.setAttribute(
+          "transform",
+          `scale(${(soma.torso + (f.weight - 82) * 0.002) * 0.98},${fatFactor})`,
+        );
+        [
+          ["tricepsL", "tricepsR", "triceps"],
+          ["bicepsL", "bicepsR", "biceps"],
+          ["forearmL", "forearmR", "forearms"],
+          ["hamstringsL", "hamstringsR", "hamstrings"],
+          ["legsL", "legsR", "legs"],
+          ["calvesL", "calvesR", "calves"],
+        ].forEach(([l, r, p]) => {
+          const scale =
+            p === "legs"
+              ? partScale(f.bodyParts[p]) * gender.hip
+              : partScale(f.bodyParts[p]) *
+                (["triceps", "biceps", "forearms"].includes(p) ? soma.limb : 1);
+          map[l].setAttribute("transform", `scale(${scale},1)`);
+          map[r].setAttribute("transform", `scale(${scale},1)`);
         });
-        const t = f.ethnicity / 100; const light = [246, 237, 228]; const dark = [75, 46, 30];
+        const t = f.ethnicity / 100;
+        const light = [246, 237, 228];
+        const dark = [75, 46, 30];
         const fill = `rgb(${light.map((v, i) => Math.round(v + (dark[i] - v) * t)).join(",")})`;
-        map.root.querySelectorAll("rect,circle,ellipse").forEach((el) => { el.setAttribute("fill", fill); el.setAttribute("stroke", "rgba(15,23,42,0.55)"); el.setAttribute("stroke-width", "1"); });
+        map.root.querySelectorAll("rect,circle,ellipse").forEach((el) => {
+          el.setAttribute("fill", fill);
+          el.setAttribute("stroke", "rgba(15,23,42,0.55)");
+          el.setAttribute("stroke-width", "1");
+        });
       }
       function updateCreatePreview() {
-        updateSvg(createSvg, { gender: ui.characterGenderInput.value, somatotype: ui.characterSomatotypeInput.value, features: createFeatures });
+        updateSvg(createSvg, {
+          gender: ui.characterGenderInput.value,
+          somatotype: ui.characterSomatotypeInput.value,
+          features: createFeatures,
+        });
         ui.previewSummary.textContent = `${createFeatures.age} yrs | ${createFeatures.height} cm | ${createFeatures.weight} kg | ${ui.characterSomatotypeInput.value.toUpperCase()}`;
       }
       function bindProceduralInputs() {
         Object.entries(PROCEDURAL_TEMPLATE.core).forEach(([k, m]) => {
-          const input = document.getElementById(`core-${k}`); const valueEl = document.getElementById(`core-${k}-value`);
-          input.addEventListener("input", () => { createFeatures[k] = Number(input.value); valueEl.textContent = `${input.value}${m.suffix}`; updateCreatePreview(); });
+          const input = document.getElementById(`core-${k}`);
+          const valueEl = document.getElementById(`core-${k}-value`);
+          input.addEventListener("input", () => {
+            createFeatures[k] = Number(input.value);
+            valueEl.textContent = `${input.value}${m.suffix}`;
+            updateCreatePreview();
+          });
         });
         Object.keys(PROCEDURAL_TEMPLATE.bodyParts).forEach((k) => {
-          const input = document.getElementById(`part-${k}`); const valueEl = document.getElementById(`part-${k}-value`);
-          input.addEventListener("input", () => { createFeatures.bodyParts[k] = Number(input.value); valueEl.textContent = input.value; updateCreatePreview(); });
+          const input = document.getElementById(`part-${k}`);
+          const valueEl = document.getElementById(`part-${k}-value`);
+          input.addEventListener("input", () => {
+            createFeatures.bodyParts[k] = Number(input.value);
+            valueEl.textContent = input.value;
+            updateCreatePreview();
+          });
         });
         ui.characterGenderInput.addEventListener("change", updateCreatePreview);
-        ui.characterSomatotypeInput.addEventListener("change", updateCreatePreview);
+        ui.characterSomatotypeInput.addEventListener(
+          "change",
+          updateCreatePreview,
+        );
       }
       function resetCreateFormToDefaults() {
-        ui.createForm.reset(); createFeatures = getDefaultFeatures();
-        Object.entries(PROCEDURAL_TEMPLATE.core).forEach(([k, m]) => { document.getElementById(`core-${k}`).value = m.default; document.getElementById(`core-${k}-value`).textContent = `${m.default}${m.suffix}`; });
-        Object.entries(PROCEDURAL_TEMPLATE.bodyParts).forEach(([k, m]) => { document.getElementById(`part-${k}`).value = m.default; document.getElementById(`part-${k}-value`).textContent = String(m.default); });
-        ui.createStatus.textContent = ""; updateCreatePreview();
+        ui.createForm.reset();
+        createFeatures = getDefaultFeatures();
+        Object.entries(PROCEDURAL_TEMPLATE.core).forEach(([k, m]) => {
+          document.getElementById(`core-${k}`).value = m.default;
+          document.getElementById(`core-${k}-value`).textContent =
+            `${m.default}${m.suffix}`;
+        });
+        Object.entries(PROCEDURAL_TEMPLATE.bodyParts).forEach(([k, m]) => {
+          document.getElementById(`part-${k}`).value = m.default;
+          document.getElementById(`part-${k}-value`).textContent = String(
+            m.default,
+          );
+        });
+        ui.createStatus.textContent = "";
+        updateCreatePreview();
       }
-      const rowTemplate = (path, label, value) => `<div data-path="${path}" class="flex items-center justify-between rounded px-2 py-1 text-xs text-slate-200"><span class="text-slate-300">${label}</span><span data-value>${value}</span></div>`;
+      const rowTemplate = (path, label, value) =>
+        `<div data-path="${path}" class="flex items-center justify-between rounded px-2 py-1 text-xs text-slate-200"><span class="text-slate-300">${label}</span><span data-value>${value}</span></div>`;
       function renderGameStatRows() {
         statLineMap.clear();
-        ui.gameCoreRows.innerHTML = [rowTemplate("features.age", "Age", "-"), rowTemplate("features.ethnicity", "Ethnicity", "-"), rowTemplate("features.height", "Height", "-"), rowTemplate("features.weight", "Weight", "-"), rowTemplate("gameState.money", "Money", "-")].join("");
-        ui.gamePartRows.innerHTML = Object.entries(PROCEDURAL_TEMPLATE.bodyParts).map(([k, m]) => rowTemplate(`features.bodyParts.${k}`, m.label, "-")).join("");
-        document.querySelectorAll("#game-screen [data-path]").forEach((row) => statLineMap.set(row.dataset.path, row));
+        const coreRows = document.getElementById("game-core-rows");
+        const partRows = document.getElementById("game-part-rows");
+        if (coreRows) {
+          coreRows.innerHTML = [
+            rowTemplate("features.age", "Age", "-"),
+            rowTemplate("features.ethnicity", "Ethnicity", "-"),
+            rowTemplate("features.height", "Height", "-"),
+            rowTemplate("features.weight", "Weight", "-"),
+          ].join("");
+        }
+        if (partRows) {
+          partRows.innerHTML = Object.entries(PROCEDURAL_TEMPLATE.bodyParts)
+            .map(([k, m]) =>
+              rowTemplate(`features.bodyParts.${k}`, m.label, "-"),
+            )
+            .join("");
+        }
+        document
+          .querySelectorAll("#game-screen [data-path]")
+          .forEach((row) => statLineMap.set(row.dataset.path, row));
       }
-      const getByPath = (obj, path) => path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
-      function setByPath(obj, path, value) { const keys = path.split("."); const last = keys.pop(); let ref = obj; keys.forEach((k) => (ref = ref[k])); ref[last] = value; }
+      const getByPath = (obj, path) =>
+        path.split(".").reduce((acc, k) => (acc ? acc[k] : undefined), obj);
+      function setByPath(obj, path, value) {
+        const keys = path.split(".");
+        const last = keys.pop();
+        let ref = obj;
+        keys.forEach((k) => (ref = ref[k]));
+        ref[last] = value;
+      }
       function refreshGameRows() {
         if (!activeCharacter) return;
         statLineMap.forEach((row, path) => {
           const v = getByPath(activeCharacter, path);
-          const out = path === "features.age" ? `${v} yrs` : path === "features.ethnicity" ? `${v}%` : path === "features.height" ? `${v} cm` : path === "features.weight" ? `${v} kg` : path === "gameState.money" ? `$${v}` : String(v);
+          const out =
+            path === "features.age"
+              ? `${v} yrs`
+              : path === "features.ethnicity"
+                ? `${v}%`
+                : path === "features.height"
+                  ? `${v} cm`
+                  : path === "features.weight"
+                    ? `${v} kg`
+                    : String(v);
           row.querySelector("[data-value]").textContent = out;
         });
       }
       function renderGameTabs() {
-        ui.gameTabs.innerHTML = TAB_CONFIG.map((tab) => `<button data-tab="${tab.key}" class="rounded-md border px-2 py-1 text-xs font-semibold ${tab.key === activeTab ? "border-emerald-500 bg-emerald-600 text-white" : "border-slate-700 bg-slate-800 text-slate-200"}">${tab.label}</button>`).join("");
-        const s = activeCharacter.gameState;
-        const tpl = {
-          economy: `<h4 class="text-sm font-semibold">Economy</h4><div class="mt-2 text-sm text-slate-300">Money: <span class="font-semibold text-slate-100">$${s.money}</span></div>`,
-          drugs: `<h4 class="text-sm font-semibold">Current Drugs/Hormones</h4><div class="mt-2 grid gap-1 text-sm text-slate-300"><div>Testosterone: <span class="font-semibold text-slate-100">${s.drugs.testosterone}</span></div><div>Deca-durabolin: <span class="font-semibold text-slate-100">${s.drugs.decaDurabolin}</span></div><div>HGH: <span class="font-semibold text-slate-100">${s.drugs.hgh}</span></div><div>IGF-1: <span class="font-semibold text-slate-100">${s.drugs.igf1}</span></div></div>`,
-          health: `<h4 class="text-sm font-semibold">Illnesses / Injuries</h4><div class="mt-2 text-sm text-slate-300">Illnesses: <span class="text-slate-100">${escapeHtml(s.illnesses.join(", "))}</span></div><div class="mt-1 text-sm text-slate-300">Injuries: <span class="text-slate-100">${escapeHtml(s.injuries.join(", "))}</span></div>`,
-          hormones: `<h4 class="text-sm font-semibold">Hormone Levels</h4><div class="mt-2 grid gap-1 text-sm text-slate-300"><div>Cortisol: <span class="font-semibold text-slate-100">${s.hormones.cortisol}</span></div><div>Testosterone: <span class="font-semibold text-slate-100">${s.hormones.testosterone}</span></div><div>Growth Hormone: <span class="font-semibold text-slate-100">${s.hormones.growthHormone}</span></div></div>`,
-          federations: `<h4 class="text-sm font-semibold">Enrolled Federations</h4><div class="mt-2 text-sm text-slate-300">${escapeHtml(s.federations.join(", "))}</div>`,
+        ui.gameTabs.innerHTML = TAB_CONFIG.map((tab) => {
+          const badge =
+            tabBadges[tab.key] > 0
+              ? `<span class="ml-1 inline-flex min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-bold text-white">${tabBadges[tab.key]}</span>`
+              : "";
+          return `<button data-tab="${tab.key}" class="rounded-md border px-2 py-1 text-xs font-semibold ${tab.key === activeTab ? "border-emerald-500 bg-emerald-600 text-white" : "border-slate-700 bg-slate-800 text-slate-200"}">${tab.label}${badge}</button>`;
+        }).join("");
+        const fmtEntityRows = (entity, values, fallbackText = "None") => {
+          const rows = (catalogs[entity] || []).map((def) => {
+            const v = values[def.key] ?? 0;
+            return `<div>${escapeHtml(def.name)}: <span class="font-semibold text-slate-100">${v}</span></div>`;
+          });
+          return rows.length
+            ? `<div class="mt-2 grid gap-1 text-sm text-slate-300">${rows.join("")}</div>`
+            : `<div class="mt-2 text-sm text-slate-400">${fallbackText}</div>`;
         };
-        ui.gameTabContent.innerHTML = tpl[activeTab] || tpl.economy;
+        const listEntityRows = (items) =>
+          items?.length
+            ? `<div class="mt-2 text-sm text-slate-300">${escapeHtml(items.join(", "))}</div>`
+            : '<div class="mt-2 text-sm text-slate-400">None</div>';
+
+        const tpl = {
+          core: `<h4 class="text-sm font-semibold">Core Attributes</h4><div id="game-core-rows" class="mt-2 grid gap-1"></div>`,
+          muscles: `<h4 class="text-sm font-semibold">Muscle Parts</h4><div id="game-part-rows" class="mt-2 grid gap-1"></div>`,
+          drugs: `<h4 class="text-sm font-semibold">Current Drugs</h4>${fmtEntityRows("drugs", activeCharacter.drugs)}`,
+          health: `<h4 class="text-sm font-semibold">Illnesses / Injuries</h4><div class="text-sm text-slate-300">Illnesses</div>${listEntityRows(activeCharacter.illnesses)}<div class="mt-2 text-sm text-slate-300">Injuries</div>${listEntityRows(activeCharacter.injuries)}`,
+          hormones: `<h4 class="text-sm font-semibold">Hormone Levels</h4>${fmtEntityRows("hormones", activeCharacter.hormones)}`,
+          federations: `<h4 class="text-sm font-semibold">Enrolled Federations</h4>${listEntityRows(activeCharacter.federations)}`,
+        };
+        ui.gameTabContent.innerHTML = tpl[activeTab] || tpl.core;
+        renderGameStatRows();
+        refreshGameRows();
       }
       function updateGameHeader() {
         ui.gameCharacterName.textContent = activeCharacter.name;
         ui.gameCharacterMeta.textContent = `${activeCharacter.gender} | ${activeCharacter.somatotype.toUpperCase()} | ID ${activeCharacter.id}`;
-        ui.gameDate.textContent = activeCharacter.gameState.inGameDate;
+        ui.gameMoney.textContent = `$${activeCharacter.gameState.money}`;
+        ui.gameDateTime.textContent = `${activeCharacter.gameState.inGameDate} ${activeCharacter.gameState.inGameTime}`;
       }
-      async function saveActiveCharacter() { if (activeCharacter) await db.characters.put(activeCharacter); }
-      function addDays(dateString, amount) { const d = new Date(`${dateString}T00:00:00`); d.setDate(d.getDate() + amount); return d.toISOString().slice(0, 10); }
+      async function saveActiveCharacter() {
+        if (activeCharacter) await upsertActiveCharacterRow(activeCharacter);
+      }
+      function advanceGameTime(steps = 1) {
+        if (!activeCharacter) return;
+        const [hourStr, minStr] =
+          activeCharacter.gameState.inGameTime.split(":");
+        const d = new Date(
+          `${activeCharacter.gameState.inGameDate}T${hourStr}:${minStr}:00`,
+        );
+        d.setMinutes(d.getMinutes() + steps * 30);
+        activeCharacter.gameState.inGameDate = d.toISOString().slice(0, 10);
+        activeCharacter.gameState.inGameTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+      }
+      function getTabByPath(path) {
+        if (path.startsWith("features.bodyParts.")) return "muscles";
+        if (
+          [
+            "features.age",
+            "features.ethnicity",
+            "features.height",
+            "features.weight",
+          ].includes(path)
+        )
+          return "core";
+        if (path.startsWith("drugs.")) return "drugs";
+        if (path.startsWith("hormones.")) return "hormones";
+        if (path.startsWith("illnesses") || path.startsWith("injuries"))
+          return "health";
+        if (path.startsWith("federations")) return "federations";
+        return null;
+      }
       async function applyDelta(path, delta, reason) {
         if (!activeCharacter) return;
-        let next = Number(getByPath(activeCharacter, path)) + delta;
+        const currentValue = Number(getByPath(activeCharacter, path));
+        const safeCurrent = Number.isFinite(currentValue) ? currentValue : 0;
+        let next = safeCurrent + delta;
         if (path.startsWith("features.bodyParts.")) next = clamp(next, 50, 150);
         if (path === "features.age") next = clamp(next, 14, 70);
         if (path === "features.height") next = clamp(next, 145, 205);
         if (path === "features.weight") next = clamp(next, 45, 140);
         if (path === "features.ethnicity") next = clamp(next, 0, 100);
-        const prev = Number(getByPath(activeCharacter, path));
+        const prev = safeCurrent;
         if (prev === next) return;
         setByPath(activeCharacter, path, next);
-        activeCharacter.gameState.inGameDate = addDays(activeCharacter.gameState.inGameDate, 1);
-        await saveActiveCharacter(); updateSvg(gameSvg, activeCharacter); refreshGameRows(); renderGameTabs(); updateGameHeader();
-        flashLine(path, next - prev); showToast(`${reason}: ${next > prev ? "+" : ""}${next - prev} (${path})`, next > prev ? "good" : "bad");
+        if (path.startsWith("drugs.")) {
+          await saveEntityValue(activeCharacter.id, "drugs", path.split(".")[1], next);
+        }
+        if (path.startsWith("hormones.")) {
+          await saveEntityValue(activeCharacter.id, "hormones", path.split(".")[1], next);
+        }
+        const changedTab = getTabByPath(path);
+        if (changedTab && changedTab !== activeTab) {
+          tabBadges[changedTab] += 1;
+        }
+        await saveActiveCharacter();
+        updateSvg(gameSvg, activeCharacter);
+        refreshGameRows();
+        renderGameTabs();
+        updateGameHeader();
+        flashLine(path, next - prev);
+        showToast(
+          `${reason}: ${next > prev ? "+" : ""}${next - prev} (${path})`,
+          next > prev ? "good" : "bad",
+        );
       }
       async function runQuickAction(action) {
         const actions = {
-          upper: async () => { await applyDelta("features.bodyParts.biceps", 2, "Upper workout"); await applyDelta("features.bodyParts.triceps", 2, "Upper workout"); await applyDelta("features.bodyParts.forearms", 1, "Upper workout"); await applyDelta("gameState.money", -20, "Gym cost"); },
-          legs: async () => { await applyDelta("features.bodyParts.legs", 2, "Leg day"); await applyDelta("features.bodyParts.hamstrings", 2, "Leg day"); await applyDelta("features.bodyParts.calves", 1, "Leg day"); await applyDelta("features.bodyParts.glutes", 1, "Leg day"); await applyDelta("gameState.money", -25, "Gym cost"); },
-          bulk: async () => { await applyDelta("features.weight", 1, "Bulk plan"); await applyDelta("gameState.money", -35, "Nutrition cost"); },
-          cut: async () => { await applyDelta("features.weight", -1, "Cutting plan"); await applyDelta("features.bodyParts.lats", 1, "Conditioning"); await applyDelta("gameState.money", -30, "Nutrition cost"); },
-          test: async () => { await applyDelta("gameState.drugs.testosterone", 10, "Compound use"); await applyDelta("gameState.hormones.testosterone", 3, "Hormone response"); await applyDelta("gameState.hormones.cortisol", -1, "Hormone response"); await applyDelta("gameState.money", -80, "Compound cost"); },
-          nextDay: async () => { activeCharacter.gameState.inGameDate = addDays(activeCharacter.gameState.inGameDate, 1); await saveActiveCharacter(); updateGameHeader(); showToast("Advanced to next day", "neutral"); },
+          upper: async () => {
+            await applyDelta("features.bodyParts.biceps", 2, "Upper workout");
+            await applyDelta("features.bodyParts.triceps", 2, "Upper workout");
+            await applyDelta("features.bodyParts.forearms", 1, "Upper workout");
+            await applyDelta("gameState.money", -20, "Gym cost");
+          },
+          legs: async () => {
+            await applyDelta("features.bodyParts.legs", 2, "Leg day");
+            await applyDelta("features.bodyParts.hamstrings", 2, "Leg day");
+            await applyDelta("features.bodyParts.calves", 1, "Leg day");
+            await applyDelta("features.bodyParts.glutes", 1, "Leg day");
+            await applyDelta("gameState.money", -25, "Gym cost");
+          },
+          bulk: async () => {
+            await applyDelta("features.weight", 1, "Bulk plan");
+            await applyDelta("gameState.money", -35, "Nutrition cost");
+          },
+          cut: async () => {
+            await applyDelta("features.weight", -1, "Cutting plan");
+            await applyDelta("features.bodyParts.lats", 1, "Conditioning");
+            await applyDelta("gameState.money", -30, "Nutrition cost");
+          },
+          test: async () => {
+            await applyDelta(
+              "drugs.testosterone",
+              10,
+              "Compound use",
+            );
+            await applyDelta(
+              "hormones.testosterone",
+              3,
+              "Hormone response",
+            );
+            await applyDelta(
+              "hormones.cortisol",
+              -1,
+              "Hormone response",
+            );
+            await applyDelta("gameState.money", -80, "Compound cost");
+          },
+          nextDay: async () => {
+            advanceGameTime(48);
+            await saveActiveCharacter();
+            updateGameHeader();
+            showToast("Advanced to next day", "neutral");
+          },
         };
-        if (actions[action]) await actions[action]();
+        if (!actions[action]) return;
+        await actions[action]();
+        if (action !== "nextDay") {
+          advanceGameTime(1);
+          await saveActiveCharacter();
+          updateGameHeader();
+        }
       }
       async function setActiveCharacter(characterId) {
-        await db.transaction("rw", db.characters, db.settings, async () => { await db.characters.where("active").equals(1).modify({ active: 0 }); await db.characters.update(characterId, { active: 1 }); await db.settings.put({ key: "activeCharacterId", value: characterId }); });
+        const userId = getCurrentUserIdOrThrow();
+        const clearResult = await window.supabaseClient
+          .from("character")
+          .update({ active: false })
+          .eq("user_id", userId);
+        if (clearResult.error) throw clearResult.error;
+
+        const setResult = await window.supabaseClient
+          .from("character")
+          .update({ active: true })
+          .eq("id", characterId)
+          .eq("user_id", userId);
+        if (setResult.error) throw setResult.error;
       }
       async function ensureOneActiveCharacter() {
-        if (await db.characters.where("active").equals(1).count()) return;
-        const first = await db.characters.orderBy("createdAt").first();
-        if (!first) { await db.settings.delete("activeCharacterId"); return; }
-        await setActiveCharacter(first.id);
+        if (!window.isUserLoggedIn) return;
+        const characters = await fetchUserCharacters();
+        if (!characters.length) return;
+        if (characters.some((c) => c.active)) return;
+        await setActiveCharacter(characters[0].id);
       }
       async function refreshHomeState() {
-        await ensureOneActiveCharacter();
-        const activeCount = await db.characters.where("active").equals(1).count();
-        const totalCount = await db.characters.count();
-        ui.continueBtn.disabled = activeCount === 0;
-        ui.homeStatus.textContent = totalCount ? `${totalCount} saved character(s). Active: ${activeCount}.` : "No saved character found. Start with New Game.";
+        if (!window.isUserLoggedIn) {
+          ui.newGameBtn.disabled = true;
+          ui.continueBtn.disabled = true;
+          ui.homeStatus.textContent = "Login required to create or continue a game.";
+          return;
+        }
+
+        try {
+          await loadCatalogs();
+          await ensureOneActiveCharacter();
+          const characters = await fetchUserCharacters();
+          const activeCount = characters.filter((c) => c.active).length;
+          const totalCount = characters.length;
+          ui.newGameBtn.disabled = false;
+          ui.continueBtn.disabled = activeCount === 0;
+          ui.homeStatus.textContent = totalCount
+            ? `${totalCount} saved character(s). Active: ${activeCount}.`
+            : "No saved character found. Start with New Game.";
+        } catch (error) {
+          console.error("Failed to refresh characters:", error);
+          ui.newGameBtn.disabled = true;
+          ui.continueBtn.disabled = true;
+          ui.homeStatus.textContent = "Could not load characters from Supabase.";
+        }
       }
-      const formatCharacterBuild = (character) => { const c = normalizeCharacter(character); return `${c.gender}, ${c.somatotype}, ${c.features.age} yrs`; };
+      const formatCharacterBuild = (character) => {
+        const c = normalizeCharacter(character);
+        return `${c.gender}, ${c.somatotype}, ${c.features.age} yrs`;
+      };
       async function renderCharacterList() {
-        const characters = await db.characters.orderBy("createdAt").reverse().toArray();
-        if (!characters.length) { ui.characterList.innerHTML = '<div class="px-4 py-5 text-sm text-slate-400">No saved characters.</div>'; return; }
-        ui.characterList.innerHTML = characters.map((raw) => {
-          const c = normalizeCharacter(raw);
-          return `<div class="grid grid-cols-[1.5fr,1fr,1fr,auto] items-center gap-3 px-4 py-3 text-sm"><div><div class="font-semibold">${escapeHtml(c.name || "Unnamed")}</div><div class="text-xs text-slate-400">ID ${c.id} | ${c.createdAt ? new Date(c.createdAt).toLocaleString() : "Unknown date"}</div></div><div class="text-slate-300">${escapeHtml(formatCharacterBuild(c))}</div><div>${c.active ? '<span class="rounded-full bg-emerald-600/20 px-2 py-1 text-xs font-semibold text-emerald-300">Active</span>' : '<span class="text-xs text-slate-400">Inactive</span>'}</div><div class="flex gap-2"><button data-action="select" data-id="${c.id}" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Select</button><button data-action="delete" data-id="${c.id}" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button></div></div>`;
-        }).join("");
+        let characters = [];
+        try {
+          characters = await fetchUserCharacters();
+        } catch (error) {
+          console.error("Failed to fetch character list:", error);
+          ui.characterList.innerHTML =
+            '<div class="px-4 py-5 text-sm text-rose-300">Could not load characters.</div>';
+          return;
+        }
+        if (!characters.length) {
+          ui.characterList.innerHTML =
+            '<div class="px-4 py-5 text-sm text-slate-400">No saved characters.</div>';
+          return;
+        }
+        ui.characterList.innerHTML = characters
+          .map((raw) => {
+            const c = normalizeCharacter(raw);
+            return `<div class="grid grid-cols-[1.5fr,1fr,1fr,auto] items-center gap-3 px-4 py-3 text-sm"><div><div class="font-semibold">${escapeHtml(c.name || "Unnamed")}</div><div class="text-xs text-slate-400">ID ${c.id} | ${c.createdAt ? new Date(c.createdAt).toLocaleString() : "Unknown date"}</div></div><div class="text-slate-300">${escapeHtml(formatCharacterBuild(c))}</div><div>${c.active ? '<span class="rounded-full bg-emerald-600/20 px-2 py-1 text-xs font-semibold text-emerald-300">Active</span>' : '<span class="text-xs text-slate-400">Inactive</span>'}</div><div class="flex gap-2"><button data-action="select" data-id="${c.id}" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Select</button><button data-action="delete" data-id="${c.id}" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button></div></div>`;
+          })
+          .join("");
       }
-      async function loadActiveCharacter() { await ensureOneActiveCharacter(); const active = await db.characters.where("active").equals(1).first(); return active ? normalizeCharacter(active) : null; }
+      async function loadActiveCharacter() {
+        await ensureOneActiveCharacter();
+        const userId = getCurrentUserIdOrThrow();
+        const { data, error } = await window.supabaseClient
+          .from("character")
+          .select("*")
+          .eq("user_id", userId)
+          .eq("active", true)
+          .limit(1)
+          .maybeSingle();
+        if (error) throw error;
+        return data ? mapDbCharacter(data) : null;
+      }
       async function openGameScreenFromActive() {
-        const character = await loadActiveCharacter();
-        if (!character) { showToast("No active character available", "bad"); await refreshHomeState(); setVisibleScreen("home"); return; }
+        let character = null;
+        try {
+          character = await loadActiveCharacter();
+        } catch (error) {
+          console.error("Failed to load active character:", error);
+        }
+        if (!character) {
+          showToast("No active character available", "bad");
+          await refreshHomeState();
+          setVisibleScreen("home");
+          return;
+        }
         activeCharacter = character;
-        renderGameStatRows(); refreshGameRows(); updateSvg(gameSvg, activeCharacter); updateGameHeader(); renderGameTabs(); setVisibleScreen("game");
+        await loadCharacterRelations(activeCharacter);
+        Object.keys(tabBadges).forEach((key) => (tabBadges[key] = 0));
+        if (!TAB_CONFIG.some((tab) => tab.key === activeTab))
+          activeTab = TAB_CONFIG[0].key;
+        updateSvg(gameSvg, activeCharacter);
+        updateGameHeader();
+        renderGameTabs();
+        setVisibleScreen("game");
       }
       async function deleteCharacter(characterId) {
-        const target = await db.characters.get(characterId); if (!target) return;
-        await db.transaction("rw", db.characters, db.settings, async () => { await db.characters.delete(characterId); if (target.active) await db.settings.delete("activeCharacterId"); });
+        const userId = getCurrentUserIdOrThrow();
+        const { error } = await window.supabaseClient
+          .from("character")
+          .delete()
+          .eq("id", characterId)
+          .eq("user_id", userId);
+        if (error) throw error;
         await ensureOneActiveCharacter();
       }
       async function refreshMuteState() {
-        const setting = await db.settings.get("muted"); isMuted = Boolean(setting && setting.value);
+        if (!window.isUserLoggedIn) {
+          isMuted = false;
+          ui.gameMuteBtn.textContent = "Mute Sounds";
+          return;
+        }
+        const setting = await getUserSetting("muted");
+        isMuted = Boolean(setting);
         ui.gameMuteBtn.textContent = isMuted ? "Unmute Sounds" : "Mute Sounds";
       }
       async function setMuted(value) {
-        isMuted = value; await db.settings.put({ key: "muted", value: isMuted });
+        isMuted = value;
+        await setUserSetting("muted", isMuted);
         ui.gameMuteBtn.textContent = isMuted ? "Unmute Sounds" : "Mute Sounds";
         showToast(isMuted ? "Sounds muted" : "Sounds unmuted", "neutral");
       }
-      ui.newGameBtn.addEventListener("click", () => { resetCreateFormToDefaults(); setVisibleScreen("create"); ui.characterNameInput.focus(); });
-      ui.cancelCreateBtn.addEventListener("click", async () => { await refreshHomeState(); setVisibleScreen("home"); });
-      ui.continueBtn.addEventListener("click", async () => { ui.continueStatus.textContent = ""; await renderCharacterList(); setVisibleScreen("continue"); });
-      ui.backFromContinueBtn.addEventListener("click", async () => { await refreshHomeState(); setVisibleScreen("home"); });
+      ui.newGameBtn.addEventListener("click", () => {
+        resetCreateFormToDefaults();
+        setVisibleScreen("create");
+        ui.characterNameInput.focus();
+      });
+      ui.cancelCreateBtn.addEventListener("click", async () => {
+        await refreshHomeState();
+        setVisibleScreen("home");
+      });
+      ui.continueBtn.addEventListener("click", async () => {
+        ui.continueStatus.textContent = "";
+        await renderCharacterList();
+        setVisibleScreen("continue");
+      });
+      ui.backFromContinueBtn.addEventListener("click", async () => {
+        await refreshHomeState();
+        setVisibleScreen("home");
+      });
       ui.characterList.addEventListener("click", async (event) => {
-        const target = event.target; if (!(target instanceof HTMLButtonElement)) return;
-        const action = target.dataset.action; const id = Number(target.dataset.id); if (!action || !id) return;
-        if (action === "select") { await setActiveCharacter(id); ui.continueStatus.textContent = `Character ${id} selected.`; await refreshHomeState(); await openGameScreenFromActive(); return; }
-        if (action === "delete") { if (!window.confirm("Delete this character permanently?")) return; await deleteCharacter(id); ui.continueStatus.textContent = `Character ${id} deleted.`; await renderCharacterList(); await refreshHomeState(); }
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement)) return;
+        const action = target.dataset.action;
+        const id = Number(target.dataset.id);
+        if (!action || !id) return;
+        if (action === "select") {
+          await setActiveCharacter(id);
+          ui.continueStatus.textContent = `Character ${id} selected.`;
+          await refreshHomeState();
+          await openGameScreenFromActive();
+          return;
+        }
+        if (action === "delete") {
+          if (!window.confirm("Delete this character permanently?")) return;
+          await deleteCharacter(id);
+          ui.continueStatus.textContent = `Character ${id} deleted.`;
+          await renderCharacterList();
+          await refreshHomeState();
+        }
       });
       ui.createForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const name = ui.characterNameInput.value.trim();
-        if (!name) { ui.createStatus.textContent = "Character name is required."; return; }
-        const characterPayload = normalizeCharacter({ name, gender: ui.characterGenderInput.value, somatotype: ui.characterSomatotypeInput.value, features: cloneData(createFeatures), gameState: getDefaultGameState(), active: 1, createdAt: new Date().toISOString() });
-        await db.transaction("rw", db.characters, db.settings, async () => { await db.characters.where("active").equals(1).modify({ active: 0 }); const id = await db.characters.add(characterPayload); await db.settings.put({ key: "activeCharacterId", value: id }); });
-        await refreshHomeState(); await openGameScreenFromActive(); showToast("Character created and loaded", "good");
+        if (!name) {
+          ui.createStatus.textContent = "Character name is required.";
+          return;
+        }
+        if (!window.isUserLoggedIn || !window.currentUser?.id) {
+          ui.createStatus.textContent = "Login required.";
+          return;
+        }
+        await loadCatalogs();
+        const characterPayload = normalizeCharacter({
+          name,
+          user_id: window.currentUser.id,
+          gender: ui.characterGenderInput.value,
+          somatotype: ui.characterSomatotypeInput.value,
+          features: cloneData(createFeatures),
+          gameState: getDefaultGameState(),
+          active: true,
+          createdAt: new Date().toISOString(),
+        });
+        const clearActive = await window.supabaseClient
+          .from("character")
+          .update({ active: false })
+          .eq("user_id", window.currentUser.id);
+        if (clearActive.error) {
+          ui.createStatus.textContent = `Could not prepare character creation: ${clearActive.error.message}`;
+          return;
+        }
+        const { data, error } = await window.supabaseClient
+          .from("character")
+          .insert({
+            user_id: window.currentUser.id,
+            name: characterPayload.name,
+            gender: characterPayload.gender,
+            somatotype: characterPayload.somatotype,
+            active: true,
+            features: characterPayload.features,
+            game_state: characterPayload.gameState,
+          })
+          .select("*")
+          .single();
+        if (error) {
+          ui.createStatus.textContent = `Could not create character: ${error.message}`;
+          return;
+        }
+        activeCharacter = mapDbCharacter(data);
+        await loadCharacterRelations(activeCharacter);
+        Object.keys(tabBadges).forEach((key) => (tabBadges[key] = 0));
+        if (!TAB_CONFIG.some((tab) => tab.key === activeTab))
+          activeTab = TAB_CONFIG[0].key;
+        await refreshHomeState();
+        updateSvg(gameSvg, activeCharacter);
+        updateGameHeader();
+        renderGameTabs();
+        setVisibleScreen("game");
+        showToast("Character created and loaded", "good");
       });
-      ui.gameBackHomeBtn.addEventListener("click", async () => { await refreshHomeState(); setVisibleScreen("home"); });
-      ui.gameNewCharacterBtn.addEventListener("click", () => { resetCreateFormToDefaults(); setVisibleScreen("create"); });
-      ui.gameMuteBtn.addEventListener("click", async () => { await setMuted(!isMuted); });
-      ui.gameTabs.addEventListener("click", (event) => { const target = event.target; if (!(target instanceof HTMLButtonElement) || !target.dataset.tab) return; activeTab = target.dataset.tab; renderGameTabs(); });
-      ui.gameScreen.addEventListener("click", async (event) => { const target = event.target; if (!(target instanceof HTMLButtonElement) || !target.dataset.action) return; await runQuickAction(target.dataset.action); });
-      renderProceduralControls(); bindProceduralInputs(); resetCreateFormToDefaults(); refreshHomeState(); refreshMuteState();
+      ui.gameBackHomeBtn.addEventListener("click", async () => {
+        await refreshHomeState();
+        setVisibleScreen("home");
+      });
+      ui.gameNewCharacterBtn.addEventListener("click", () => {
+        resetCreateFormToDefaults();
+        setVisibleScreen("create");
+      });
+      ui.gameMuteBtn.addEventListener("click", async () => {
+        await setMuted(!isMuted);
+      });
+      ui.gameTabs.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement) || !target.dataset.tab)
+          return;
+        activeTab = target.dataset.tab;
+        tabBadges[activeTab] = 0;
+        renderGameTabs();
+      });
+      ui.gameScreen.addEventListener("click", async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLButtonElement) || !target.dataset.action)
+          return;
+        await runQuickAction(target.dataset.action);
+      });
+      renderProceduralControls();
+      bindProceduralInputs();
+      resetCreateFormToDefaults();
+      window.refreshHomeState = refreshHomeState;
+      window.refreshMuteState = refreshMuteState;
+      refreshHomeState();
+      refreshMuteState();
     </script>
   </body>
 </html>
