@@ -8,8 +8,8 @@
     "tailwindcss": "^4.2.0"
   },
   "scripts": {
-    "dev": "npx tailwindcss -i tailwind.css -o tailwind.out.css --watch",
-    "build": "npx tailwindcss -i tailwind.css -o tailwind.out.css --minify"
+    "dev": "node ./node_modules/@tailwindcss/cli/dist/index.js -i tailwind.css -o tailwind.out.css --watch",
+    "build": "node ./node_modules/@tailwindcss/cli/dist/index.js -i tailwind.css -o tailwind.out.css --minify"
   },
   "repository": {
     "type": "git",
