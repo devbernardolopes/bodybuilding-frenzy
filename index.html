@@ -54,6 +54,12 @@
           >
             Continue Game
           </button>
+          <button
+            id="home-admin-btn"
+            class="hidden rounded-xl border border-amber-500 bg-amber-600 px-5 py-3 text-left font-semibold transition hover:bg-amber-500"
+          >
+            Admin
+          </button>
         </div>
         <p id="home-status" class="mt-4 text-sm text-slate-400"></p>
       </section>
@@ -379,6 +385,12 @@
             >
               Mute Sounds
             </button>
+            <button
+              id="game-admin-btn"
+              class="hidden rounded-md border border-sky-500 bg-sky-600 px-3 py-1.5 text-sm font-semibold hover:bg-sky-500"
+            >
+              Admin
+            </button>
           </div>
         </div>
         <div
@@ -570,15 +582,59 @@
               </p>
               <div id="action-buttons" class="mt-3 grid gap-2 sm:grid-cols-2"></div>
             </div>
-            <div
-              class="mt-4 rounded-lg border border-slate-800 bg-slate-900/80 p-3"
+          </section>
+        </div>
+      </section>
+      <section
+        id="admin-screen"
+        class="hidden w-full rounded-2xl border border-slate-800 bg-slate-900/70 px-2 py-3 shadow-2xl backdrop-blur sm:px-3 sm:py-4"
+      >
+        <div
+          class="sticky top-2 z-30 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-800 bg-slate-950/95 px-3 py-3 backdrop-blur"
+        >
+          <div>
+            <h2 class="text-xl font-bold">Admin</h2>
+            <p class="text-xs text-slate-400">
+              Manage actions and catalogs.
+            </p>
+          </div>
+          <button
+            id="admin-back-btn"
+            class="rounded-md border border-slate-600 bg-slate-700 px-3 py-1.5 text-sm font-semibold hover:bg-slate-600"
+          >
+            Back
+          </button>
+        </div>
+        <div class="mt-3 rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+          <div id="admin-tabs" class="grid grid-cols-2 gap-2">
+            <button
+              id="admin-tab-actions"
+              data-admin-tab="actions"
+              class="rounded-md border border-sky-500 bg-sky-600 px-2 py-1 text-xs font-semibold text-white"
             >
+              Actions Editor
+            </button>
+            <button
+              id="admin-tab-catalogs"
+              data-admin-tab="catalogs"
+              class="rounded-md border border-slate-700 bg-slate-800 px-2 py-1 text-xs font-semibold text-slate-200"
+            >
+              Federations and Drugs
+            </button>
+          </div>
+          <div id="admin-tab-content" class="mt-3">
+            <div id="admin-panel-actions">
               <h4 class="text-sm font-semibold">Action Admin</h4>
               <p class="text-xs text-slate-400">
-                Create/edit actions, conditions and effects directly from UI.
+                Create/edit actions, conditions and effects.
               </p>
-              <div id="action-admin-status" class="mt-2 text-xs text-slate-400"></div>
-              <div class="mt-3 grid gap-3 lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]">
+              <div
+                id="action-admin-status"
+                class="mt-2 text-xs text-slate-400"
+              ></div>
+              <div
+                class="mt-3 grid gap-3 lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]"
+              >
                 <div>
                   <div id="action-admin-list" class="grid gap-2"></div>
                 </div>
@@ -586,24 +642,47 @@
                   <input id="action-admin-id" type="hidden" />
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Key</span>
-                    <input id="action-admin-key" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="upper_workout" />
+                    <input
+                      id="action-admin-key"
+                      type="text"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                      placeholder="upper_workout"
+                    />
                   </label>
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Name</span>
-                    <input id="action-admin-name" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Upper Workout" />
+                    <input
+                      id="action-admin-name"
+                      type="text"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                      placeholder="Upper Workout"
+                    />
                   </label>
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Label</span>
-                    <input id="action-admin-label" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Upper Body Workout" />
+                    <input
+                      id="action-admin-label"
+                      type="text"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                      placeholder="Upper Body Workout"
+                    />
                   </label>
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Description</span>
-                    <input id="action-admin-description" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Build upper body, costs gym fee" />
+                    <input
+                      id="action-admin-description"
+                      type="text"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                      placeholder="Build upper body, costs gym fee"
+                    />
                   </label>
                   <div class="grid grid-cols-3 gap-2">
                     <label class="grid gap-1 text-xs">
                       <span class="text-slate-300">Color</span>
-                      <select id="action-admin-color" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm">
+                      <select
+                        id="action-admin-color"
+                        class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                      >
                         <option value="slate">slate</option>
                         <option value="emerald">emerald</option>
                         <option value="sky">sky</option>
@@ -613,35 +692,180 @@
                     </label>
                     <label class="grid gap-1 text-xs">
                       <span class="text-slate-300">Time Cost</span>
-                      <input id="action-admin-time" type="number" min="0" step="1" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" value="1" />
+                      <input
+                        id="action-admin-time"
+                        type="number"
+                        min="0"
+                        step="1"
+                        class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                        value="1"
+                      />
                     </label>
                     <label class="grid gap-1 text-xs">
                       <span class="text-slate-300">Sort</span>
-                      <input id="action-admin-sort" type="number" step="1" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" value="0" />
+                      <input
+                        id="action-admin-sort"
+                        type="number"
+                        step="1"
+                        class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                        value="0"
+                      />
                     </label>
                   </div>
-                  <label class="mt-1 inline-flex items-center gap-2 text-xs text-slate-200">
+                  <label
+                    class="mt-1 inline-flex items-center gap-2 text-xs text-slate-200"
+                  >
                     <input id="action-admin-active" type="checkbox" checked />
                     Active
                   </label>
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Conditions JSON</span>
-                    <textarea id="action-admin-conditions" rows="5" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"></textarea>
+                    <textarea
+                      id="action-admin-conditions"
+                      rows="5"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"
+                    ></textarea>
                   </label>
                   <label class="grid gap-1 text-xs">
                     <span class="text-slate-300">Effects JSON</span>
-                    <textarea id="action-admin-effects" rows="7" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"></textarea>
+                    <textarea
+                      id="action-admin-effects"
+                      rows="7"
+                      class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"
+                    ></textarea>
                   </label>
                   <div class="mt-1 flex flex-wrap gap-2">
-                    <button id="action-admin-new" type="button" class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-600">New</button>
-                    <button id="action-admin-save" type="button" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Save</button>
-                    <button id="action-admin-delete" type="button" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button>
-                    <button id="action-admin-reload" type="button" class="rounded-md border border-sky-500 bg-sky-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-sky-500">Reload</button>
+                    <button
+                      id="action-admin-new"
+                      type="button"
+                      class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-600"
+                    >
+                      New
+                    </button>
+                    <button
+                      id="action-admin-save"
+                      type="button"
+                      class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500"
+                    >
+                      Save
+                    </button>
+                    <button
+                      id="action-admin-delete"
+                      type="button"
+                      class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      id="action-admin-reload"
+                      type="button"
+                      class="rounded-md border border-sky-500 bg-sky-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-sky-500"
+                    >
+                      Reload
+                    </button>
                   </div>
                 </div>
               </div>
             </div>
-          </section>
+            <div id="admin-panel-catalogs" class="hidden">
+              <div class="grid gap-3 lg:grid-cols-2">
+                <section class="rounded-lg border border-slate-800 bg-slate-900/80 p-3">
+                  <h4 class="text-sm font-semibold">Drugs</h4>
+                  <p
+                    id="admin-drug-status"
+                    class="mt-1 text-xs text-slate-400"
+                  ></p>
+                  <div
+                    class="mt-3 grid gap-3 lg:grid-cols-[minmax(120px,0.85fr)_minmax(0,1.15fr)]"
+                  >
+                    <div id="admin-drug-list" class="grid gap-2"></div>
+                    <div class="grid gap-2">
+                      <input id="admin-drug-id" type="hidden" />
+                      <label class="grid gap-1 text-xs">
+                        <span class="text-slate-300">Key</span>
+                        <input
+                          id="admin-drug-key"
+                          type="text"
+                          class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                          placeholder="testosterone"
+                        />
+                      </label>
+                      <label class="grid gap-1 text-xs">
+                        <span class="text-slate-300">Name</span>
+                        <input
+                          id="admin-drug-name"
+                          type="text"
+                          class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                          placeholder="Testosterone"
+                        />
+                      </label>
+                      <label
+                        class="mt-1 inline-flex items-center gap-2 text-xs text-slate-200"
+                      >
+                        <input id="admin-drug-active" type="checkbox" checked />
+                        Active
+                      </label>
+                      <div class="mt-1 flex flex-wrap gap-2">
+                        <button id="admin-drug-new" type="button" class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-600">New</button>
+                        <button id="admin-drug-save" type="button" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Save</button>
+                        <button id="admin-drug-delete" type="button" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button>
+                        <button id="admin-drug-reload" type="button" class="rounded-md border border-sky-500 bg-sky-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-sky-500">Reload</button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+                <section class="rounded-lg border border-slate-800 bg-slate-900/80 p-3">
+                  <h4 class="text-sm font-semibold">Federations</h4>
+                  <p
+                    id="admin-federation-status"
+                    class="mt-1 text-xs text-slate-400"
+                  ></p>
+                  <div
+                    class="mt-3 grid gap-3 lg:grid-cols-[minmax(120px,0.85fr)_minmax(0,1.15fr)]"
+                  >
+                    <div id="admin-federation-list" class="grid gap-2"></div>
+                    <div class="grid gap-2">
+                      <input id="admin-federation-id" type="hidden" />
+                      <label class="grid gap-1 text-xs">
+                        <span class="text-slate-300">Key</span>
+                        <input
+                          id="admin-federation-key"
+                          type="text"
+                          class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                          placeholder="ifbb"
+                        />
+                      </label>
+                      <label class="grid gap-1 text-xs">
+                        <span class="text-slate-300">Name</span>
+                        <input
+                          id="admin-federation-name"
+                          type="text"
+                          class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm"
+                          placeholder="IFBB"
+                        />
+                      </label>
+                      <label
+                        class="mt-1 inline-flex items-center gap-2 text-xs text-slate-200"
+                      >
+                        <input
+                          id="admin-federation-active"
+                          type="checkbox"
+                          checked
+                        />
+                        Active
+                      </label>
+                      <div class="mt-1 flex flex-wrap gap-2">
+                        <button id="admin-federation-new" type="button" class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-600">New</button>
+                        <button id="admin-federation-save" type="button" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Save</button>
+                        <button id="admin-federation-delete" type="button" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button>
+                        <button id="admin-federation-reload" type="button" class="rounded-md border border-sky-500 bg-sky-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-sky-500">Reload</button>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
@@ -665,6 +889,8 @@
 
       window.isUserLoggedIn = false;
       window.currentUser = null;
+      window.isAdminUser = false;
+      window.refreshAdminAccess = async () => {};
 
       function applyAuthUi(session) {
         const loggedIn = Boolean(session?.user);
@@ -692,6 +918,9 @@
         }
         if (typeof window.refreshMuteState === "function") {
           window.refreshMuteState();
+        }
+        if (typeof window.refreshAdminAccess === "function") {
+          window.refreshAdminAccess();
         }
       }
 
@@ -873,8 +1102,10 @@
         createScreen: document.getElementById("create-screen"),
         continueScreen: document.getElementById("continue-screen"),
         gameScreen: document.getElementById("game-screen"),
+        adminScreen: document.getElementById("admin-screen"),
         newGameBtn: document.getElementById("new-game-btn"),
         continueBtn: document.getElementById("continue-btn"),
+        homeAdminBtn: document.getElementById("home-admin-btn"),
         homeStatus: document.getElementById("home-status"),
         createForm: document.getElementById("create-form"),
         characterNameInput: document.getElementById("character-name"),
@@ -897,11 +1128,16 @@
         gameBackHomeBtn: document.getElementById("game-back-home-btn"),
         gameNewCharacterBtn: document.getElementById("game-new-character-btn"),
         gameMuteBtn: document.getElementById("game-mute-btn"),
+        gameAdminBtn: document.getElementById("game-admin-btn"),
         gameMoney: document.getElementById("game-money"),
         gameDateTime: document.getElementById("game-datetime"),
         gameTabs: document.getElementById("game-tabs"),
         gameTabContent: document.getElementById("game-tab-content"),
         actionButtons: document.getElementById("action-buttons"),
+        adminBackBtn: document.getElementById("admin-back-btn"),
+        adminTabs: document.getElementById("admin-tabs"),
+        adminPanelActions: document.getElementById("admin-panel-actions"),
+        adminPanelCatalogs: document.getElementById("admin-panel-catalogs"),
         actionAdminStatus: document.getElementById("action-admin-status"),
         actionAdminList: document.getElementById("action-admin-list"),
         actionAdminId: document.getElementById("action-admin-id"),
@@ -919,6 +1155,26 @@
         actionAdminSave: document.getElementById("action-admin-save"),
         actionAdminDelete: document.getElementById("action-admin-delete"),
         actionAdminReload: document.getElementById("action-admin-reload"),
+        adminDrugStatus: document.getElementById("admin-drug-status"),
+        adminDrugList: document.getElementById("admin-drug-list"),
+        adminDrugId: document.getElementById("admin-drug-id"),
+        adminDrugKey: document.getElementById("admin-drug-key"),
+        adminDrugName: document.getElementById("admin-drug-name"),
+        adminDrugActive: document.getElementById("admin-drug-active"),
+        adminDrugNew: document.getElementById("admin-drug-new"),
+        adminDrugSave: document.getElementById("admin-drug-save"),
+        adminDrugDelete: document.getElementById("admin-drug-delete"),
+        adminDrugReload: document.getElementById("admin-drug-reload"),
+        adminFederationStatus: document.getElementById("admin-federation-status"),
+        adminFederationList: document.getElementById("admin-federation-list"),
+        adminFederationId: document.getElementById("admin-federation-id"),
+        adminFederationKey: document.getElementById("admin-federation-key"),
+        adminFederationName: document.getElementById("admin-federation-name"),
+        adminFederationActive: document.getElementById("admin-federation-active"),
+        adminFederationNew: document.getElementById("admin-federation-new"),
+        adminFederationSave: document.getElementById("admin-federation-save"),
+        adminFederationDelete: document.getElementById("admin-federation-delete"),
+        adminFederationReload: document.getElementById("admin-federation-reload"),
       };
       const cloneData = (v) =>
         typeof structuredClone === "function"
@@ -954,6 +1210,228 @@
             { onConflict: "user_id,key" },
           );
         if (error) throw error;
+      }
+
+      function isTruthySetting(value) {
+        if (value === true) return true;
+        if (value === false || value == null) return false;
+        if (typeof value === "number") return value > 0;
+        if (typeof value === "string") {
+          return ["1", "true", "yes", "on"].includes(value.toLowerCase());
+        }
+        return false;
+      }
+
+      function setAdminUiVisibility() {
+        const show = Boolean(window.isUserLoggedIn && window.isAdminUser);
+        if (ui.homeAdminBtn) ui.homeAdminBtn.classList.toggle("hidden", !show);
+        if (ui.gameAdminBtn) ui.gameAdminBtn.classList.toggle("hidden", !show);
+      }
+
+      async function refreshAdminAccess() {
+        if (!window.isUserLoggedIn) {
+          window.isAdminUser = false;
+          setAdminUiVisibility();
+          if (!ui.adminScreen.classList.contains("hidden")) {
+            setVisibleScreen("home");
+          }
+          return;
+        }
+        try {
+          const raw = await getUserSetting("is_admin");
+          window.isAdminUser = isTruthySetting(raw);
+        } catch (error) {
+          console.error("Could not load admin flag:", error);
+          window.isAdminUser = false;
+        }
+        setAdminUiVisibility();
+        if (!window.isAdminUser && !ui.adminScreen.classList.contains("hidden")) {
+          setVisibleScreen("home");
+        }
+      }
+
+      function renderAdminTabs() {
+        if (!ui.adminTabs) return;
+        ui.adminTabs.querySelectorAll("[data-admin-tab]").forEach((button) => {
+          const tab = button.getAttribute("data-admin-tab");
+          const active = tab === activeAdminTab;
+          button.className = `rounded-md border px-2 py-1 text-xs font-semibold ${active ? "border-sky-500 bg-sky-600 text-white" : "border-slate-700 bg-slate-800 text-slate-200"}`;
+        });
+        ui.adminPanelActions.classList.toggle("hidden", activeAdminTab !== "actions");
+        ui.adminPanelCatalogs.classList.toggle(
+          "hidden",
+          activeAdminTab !== "catalogs",
+        );
+      }
+
+      async function openAdminScreen(returnTo = "home") {
+        if (!window.isAdminUser) {
+          showToast("Admin access required.", "bad");
+          return;
+        }
+        adminReturnScreen = returnTo;
+        activeAdminTab = "actions";
+        renderAdminTabs();
+        await loadGameActions();
+        renderActionAdminList();
+        await reloadAdminCatalogSection("drug");
+        await reloadAdminCatalogSection("federation");
+        setVisibleScreen("admin");
+      }
+
+      function getAdminCatalogConfig(entity) {
+        if (entity === "drug") {
+          return {
+            table: "drug",
+            selectedId: () => selectedDrugId,
+            setSelectedId: (id) => {
+              selectedDrugId = id;
+            },
+            ui: {
+              status: ui.adminDrugStatus,
+              list: ui.adminDrugList,
+              id: ui.adminDrugId,
+              key: ui.adminDrugKey,
+              name: ui.adminDrugName,
+              active: ui.adminDrugActive,
+            },
+          };
+        }
+        return {
+          table: "federation",
+          selectedId: () => selectedFederationId,
+          setSelectedId: (id) => {
+            selectedFederationId = id;
+          },
+          ui: {
+            status: ui.adminFederationStatus,
+            list: ui.adminFederationList,
+            id: ui.adminFederationId,
+            key: ui.adminFederationKey,
+            name: ui.adminFederationName,
+            active: ui.adminFederationActive,
+          },
+        };
+      }
+
+      function setAdminCatalogStatus(entity, message, tone = "neutral") {
+        const cfg = getAdminCatalogConfig(entity);
+        const toneClass =
+          tone === "error"
+            ? "text-rose-300"
+            : tone === "success"
+              ? "text-emerald-300"
+              : "text-slate-400";
+        cfg.ui.status.className = `mt-1 text-xs ${toneClass}`;
+        cfg.ui.status.textContent = message || "";
+      }
+
+      function clearAdminCatalogForm(entity) {
+        const cfg = getAdminCatalogConfig(entity);
+        cfg.setSelectedId(null);
+        cfg.ui.id.value = "";
+        cfg.ui.key.value = "";
+        cfg.ui.name.value = "";
+        cfg.ui.active.checked = true;
+      }
+
+      function fillAdminCatalogForm(entity, row) {
+        const cfg = getAdminCatalogConfig(entity);
+        cfg.setSelectedId(row.id);
+        cfg.ui.id.value = String(row.id);
+        cfg.ui.key.value = row.key || "";
+        cfg.ui.name.value = row.name || "";
+        cfg.ui.active.checked = Boolean(row.active);
+      }
+
+      async function loadAdminCatalogRows(entity) {
+        const cfg = getAdminCatalogConfig(entity);
+        const { data, error } = await window.supabaseClient
+          .from(cfg.table)
+          .select("id,key,name,active")
+          .order("name", { ascending: true });
+        if (error) throw error;
+        return data || [];
+      }
+
+      async function reloadAdminCatalogSection(entity) {
+        const cfg = getAdminCatalogConfig(entity);
+        let rows = [];
+        try {
+          rows = await loadAdminCatalogRows(entity);
+        } catch (error) {
+          setAdminCatalogStatus(entity, `Load failed: ${error.message}`, "error");
+          return;
+        }
+        const selected = cfg.selectedId();
+        cfg.ui.list.innerHTML = rows.length
+          ? rows
+              .map((row) => {
+                const active = selected && String(selected) === String(row.id);
+                return `<button type="button" data-admin-${entity}-id="${row.id}" class="rounded-md border px-2 py-1.5 text-left text-xs ${active ? "border-sky-500 bg-sky-600 text-white" : "border-slate-700 bg-slate-800 text-slate-200"}"><div class="font-semibold">${escapeHtml(row.name || row.key)}</div><div class="text-[10px] ${active ? "text-sky-100" : "text-slate-400"}">${escapeHtml(row.key)} | ${row.active ? "active" : "inactive"}</div></button>`;
+              })
+              .join("")
+          : '<div class="text-xs text-slate-400">No entries found.</div>';
+      }
+
+      async function saveAdminCatalogItem(entity) {
+        const cfg = getAdminCatalogConfig(entity);
+        const key = cfg.ui.key.value.trim();
+        const name = cfg.ui.name.value.trim();
+        if (!key || !name) {
+          setAdminCatalogStatus(entity, "Key and Name are required.", "error");
+          return;
+        }
+        const payload = { key, name, active: cfg.ui.active.checked };
+        const id = cfg.selectedId();
+        if (id) {
+          const { error } = await window.supabaseClient
+            .from(cfg.table)
+            .update(payload)
+            .eq("id", id);
+          if (error) {
+            setAdminCatalogStatus(entity, `Update failed: ${error.message}`, "error");
+            return;
+          }
+        } else {
+          const { data, error } = await window.supabaseClient
+            .from(cfg.table)
+            .insert(payload)
+            .select("id")
+            .single();
+          if (error) {
+            setAdminCatalogStatus(entity, `Create failed: ${error.message}`, "error");
+            return;
+          }
+          cfg.setSelectedId(data.id);
+        }
+        await loadCatalogs();
+        await reloadAdminCatalogSection(entity);
+        setAdminCatalogStatus(entity, "Saved.", "success");
+        if (activeCharacter) renderGameTabs();
+      }
+
+      async function deleteAdminCatalogItem(entity) {
+        const cfg = getAdminCatalogConfig(entity);
+        const id = cfg.selectedId();
+        if (!id) {
+          setAdminCatalogStatus(entity, "Select an entry first.", "error");
+          return;
+        }
+        if (!window.confirm("Delete selected entry?")) return;
+        const { error } = await window.supabaseClient
+          .from(cfg.table)
+          .delete()
+          .eq("id", id);
+        if (error) {
+          setAdminCatalogStatus(entity, `Delete failed: ${error.message}`, "error");
+          return;
+        }
+        clearAdminCatalogForm(entity);
+        await loadCatalogs();
+        await reloadAdminCatalogSection(entity);
+        setAdminCatalogStatus(entity, "Deleted.", "success");
+        if (activeCharacter) renderGameTabs();
       }
 
       async function loadCatalogs() {
@@ -1512,6 +1990,10 @@
       let activeCharacter = null;
       let isMuted = false;
       let activeTab = "core";
+      let activeAdminTab = "actions";
+      let adminReturnScreen = "home";
+      let selectedDrugId = null;
+      let selectedFederationId = null;
       let gameActions = [];
       let selectedActionId = null;
       const tabBadges = Object.fromEntries(
@@ -1524,10 +2006,12 @@
         ui.createScreen.classList.add("hidden");
         ui.continueScreen.classList.add("hidden");
         ui.gameScreen.classList.add("hidden");
+        ui.adminScreen.classList.add("hidden");
         if (name === "home") ui.homeScreen.classList.remove("hidden");
         if (name === "create") ui.createScreen.classList.remove("hidden");
         if (name === "continue") ui.continueScreen.classList.remove("hidden");
         if (name === "game") ui.gameScreen.classList.remove("hidden");
+        if (name === "admin") ui.adminScreen.classList.remove("hidden");
       }
       function showToast(message, tone = "neutral") {
         const toneClasses = {
@@ -2213,6 +2697,29 @@
       ui.gameMuteBtn.addEventListener("click", async () => {
         await setMuted(!isMuted);
       });
+      ui.homeAdminBtn.addEventListener("click", async () => {
+        await openAdminScreen("home");
+      });
+      ui.gameAdminBtn.addEventListener("click", async () => {
+        await openAdminScreen("game");
+      });
+      ui.adminBackBtn.addEventListener("click", () => {
+        if (adminReturnScreen === "game" && activeCharacter) {
+          setVisibleScreen("game");
+          return;
+        }
+        setVisibleScreen("home");
+      });
+      ui.adminTabs.addEventListener("click", (event) => {
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const button = origin.closest("button[data-admin-tab]");
+        if (!button) return;
+        const tab = button.getAttribute("data-admin-tab");
+        if (!tab) return;
+        activeAdminTab = tab;
+        renderAdminTabs();
+      });
       ui.actionAdminList.addEventListener("click", (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
@@ -2251,6 +2758,62 @@
           setActionAdminStatus(`Reload failed: ${error.message}`, "error");
         }
       });
+      ui.adminDrugList.addEventListener("click", async (event) => {
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const btn = origin.closest("button[data-admin-drug-id]");
+        if (!btn) return;
+        const id = Number(btn.getAttribute("data-admin-drug-id"));
+        if (!id) return;
+        const rows = await loadAdminCatalogRows("drug");
+        const selected = rows.find((row) => row.id === id);
+        if (!selected) return;
+        fillAdminCatalogForm("drug", selected);
+        await reloadAdminCatalogSection("drug");
+      });
+      ui.adminFederationList.addEventListener("click", async (event) => {
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const btn = origin.closest("button[data-admin-federation-id]");
+        if (!btn) return;
+        const id = Number(btn.getAttribute("data-admin-federation-id"));
+        if (!id) return;
+        const rows = await loadAdminCatalogRows("federation");
+        const selected = rows.find((row) => row.id === id);
+        if (!selected) return;
+        fillAdminCatalogForm("federation", selected);
+        await reloadAdminCatalogSection("federation");
+      });
+      ui.adminDrugNew.addEventListener("click", async () => {
+        clearAdminCatalogForm("drug");
+        await reloadAdminCatalogSection("drug");
+        setAdminCatalogStatus("drug", "New entry form ready.");
+      });
+      ui.adminDrugSave.addEventListener("click", async () => {
+        await saveAdminCatalogItem("drug");
+      });
+      ui.adminDrugDelete.addEventListener("click", async () => {
+        await deleteAdminCatalogItem("drug");
+      });
+      ui.adminDrugReload.addEventListener("click", async () => {
+        await reloadAdminCatalogSection("drug");
+        setAdminCatalogStatus("drug", "Reloaded.", "success");
+      });
+      ui.adminFederationNew.addEventListener("click", async () => {
+        clearAdminCatalogForm("federation");
+        await reloadAdminCatalogSection("federation");
+        setAdminCatalogStatus("federation", "New entry form ready.");
+      });
+      ui.adminFederationSave.addEventListener("click", async () => {
+        await saveAdminCatalogItem("federation");
+      });
+      ui.adminFederationDelete.addEventListener("click", async () => {
+        await deleteAdminCatalogItem("federation");
+      });
+      ui.adminFederationReload.addEventListener("click", async () => {
+        await reloadAdminCatalogSection("federation");
+        setAdminCatalogStatus("federation", "Reloaded.", "success");
+      });
       ui.gameTabs.addEventListener("click", async (event) => {
         const origin = event.target;
         if (!(origin instanceof HTMLElement)) return;
@@ -2276,10 +2839,15 @@
       bindProceduralInputs();
       resetCreateFormToDefaults();
       clearActionForm();
+      clearAdminCatalogForm("drug");
+      clearAdminCatalogForm("federation");
+      renderAdminTabs();
       window.refreshHomeState = refreshHomeState;
       window.refreshMuteState = refreshMuteState;
+      window.refreshAdminAccess = refreshAdminAccess;
       refreshHomeState();
       refreshMuteState();
+      refreshAdminAccess();
     </script>
   </body>
 </html>
