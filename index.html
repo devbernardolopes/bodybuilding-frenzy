@@ -6,6 +6,15 @@
     <title>Bodybuilding Frenzy Prototype</title>
     <link rel="stylesheet" href="tailwind.out.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      button {
+        cursor: pointer;
+      }
+      #settings-modal:target {
+        display: flex !important;
+        z-index: 1000;
+      }
+    </style>
   </head>
   <body class="min-h-screen bg-slate-950 text-slate-100">
     <div
@@ -35,17 +44,10 @@
             Login with Google
           </button>
           <button
-            id="logout-btn"
-            onclick="logoutUser()"
-            class="hidden rounded-xl border border-rose-500 bg-rose-600 px-5 py-3 text-left font-semibold transition hover:bg-rose-500"
-          >
-            Logout
-          </button>
-          <button
             id="new-game-btn"
             class="rounded-xl border border-emerald-500 bg-emerald-600 px-5 py-3 text-left font-semibold transition hover:bg-emerald-500"
           >
-            New Game
+            Create Character
           </button>
           <button
             id="continue-btn"
@@ -54,6 +56,13 @@
           >
             Continue Game
           </button>
+          <a
+            id="home-settings-btn"
+            href="#settings-modal"
+            class="rounded-xl border border-indigo-500 bg-indigo-600 px-5 py-3 text-left font-semibold transition hover:bg-indigo-500"
+          >
+            Settings
+          </a>
           <button
             id="home-admin-btn"
             class="hidden rounded-xl border border-amber-500 bg-amber-600 px-5 py-3 text-left font-semibold transition hover:bg-amber-500"
@@ -62,6 +71,15 @@
           </button>
         </div>
         <p id="home-status" class="mt-4 text-sm text-slate-400"></p>
+        <div class="mt-8 border-t border-slate-800 pt-4">
+          <button
+            id="logout-btn"
+            onclick="logoutUser()"
+            class="hidden w-full rounded-xl border border-rose-500 bg-rose-600 px-5 py-3 text-left font-semibold transition hover:bg-rose-500"
+          >
+            Logout
+          </button>
+        </div>
       </section>
       <section
         id="create-screen"
@@ -377,14 +395,15 @@
               id="game-new-character-btn"
               class="rounded-md border border-emerald-500 bg-emerald-600 px-3 py-1.5 text-sm font-semibold hover:bg-emerald-500"
             >
-              New Character
+              Create Character
             </button>
-            <button
-              id="game-mute-btn"
-              class="rounded-md border border-amber-500 bg-amber-600 px-3 py-1.5 text-sm font-semibold hover:bg-amber-500"
+            <a
+              id="game-settings-btn"
+              href="#settings-modal"
+              class="rounded-md border border-indigo-500 bg-indigo-600 px-3 py-1.5 text-sm font-semibold hover:bg-indigo-500"
             >
-              Mute Sounds
-            </button>
+              Settings
+            </a>
             <button
               id="game-admin-btn"
               class="hidden rounded-md border border-sky-500 bg-sky-600 px-3 py-1.5 text-sm font-semibold hover:bg-sky-500"
@@ -869,6 +888,53 @@
         </div>
       </section>
     </main>
+    <div
+      id="settings-modal"
+      class="fixed inset-0 z-40 hidden items-center justify-center bg-slate-950/70 px-3"
+      style="display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(2, 6, 23, 0.75); align-items: center; justify-content: center; padding: 0.75rem;"
+    >
+      <div class="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-2xl" style="width: min(100%, 42rem); background: #0f172a; border: 1px solid #334155; color: #e2e8f0;">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h3 class="text-xl font-bold">Settings</h3>
+            <p class="text-xs text-slate-400">Per-user configuration</p>
+          </div>
+          <a
+            id="settings-close-btn"
+            href="#"
+            class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1 text-xs font-semibold hover:bg-slate-600"
+          >
+            Close
+          </a>
+        </div>
+        <div class="mt-4 grid gap-3">
+          <label class="grid gap-1 text-sm">
+            <span class="text-slate-300">Measurement System</span>
+            <select
+              id="settings-measurement"
+              class="rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+            >
+              <option value="metric">Metric</option>
+              <option value="imperial">Imperial</option>
+            </select>
+          </label>
+          <label class="grid gap-1 text-sm">
+            <span class="text-slate-300">Language</span>
+            <select
+              id="settings-language"
+              class="rounded-md border border-slate-700 bg-slate-950 px-3 py-2"
+            >
+              <option value="en-US">en-US</option>
+            </select>
+          </label>
+          <label class="inline-flex items-center gap-2 text-sm text-slate-300">
+            <input id="settings-muted" type="checkbox" />
+            Mute Sounds
+          </label>
+        </div>
+        <p id="settings-status" class="mt-3 text-xs text-slate-400"></p>
+      </div>
+    </div>
     <script>
       const SUPABASE_URL = "https://bnuvaqzarneofklqkgic.supabase.co";
       const SUPABASE_ANON_KEY =
@@ -891,6 +957,7 @@
       window.currentUser = null;
       window.isAdminUser = false;
       window.refreshAdminAccess = async () => {};
+      window.stopCharacterSync = () => {};
 
       function applyAuthUi(session) {
         const loggedIn = Boolean(session?.user);
@@ -912,16 +979,44 @@
             ? `Logged in as ${session.user.email ?? session.user.id}`
             : "Not logged in";
         }
+        if (!loggedIn && typeof window.stopCharacterSync === "function") {
+          window.stopCharacterSync();
+        }
+        if (!loggedIn) {
+          const modal = document.getElementById("settings-modal");
+          if (modal) {
+            modal.classList.add("hidden");
+            modal.classList.remove("flex");
+            modal.style.display = "none";
+          }
+        }
+        ensureSettingsButtonsUsable();
 
         if (typeof window.refreshHomeState === "function") {
           window.refreshHomeState();
         }
-        if (typeof window.refreshMuteState === "function") {
-          window.refreshMuteState();
+        if (typeof window.refreshUserSettings === "function") {
+          window.refreshUserSettings();
         }
         if (typeof window.refreshAdminAccess === "function") {
           window.refreshAdminAccess();
         }
+      }
+
+      function ensureSettingsButtonsUsable() {
+        ["home-settings-btn", "game-settings-btn"].forEach((id) => {
+          const btn = document.getElementById(id);
+          if (!btn) return;
+          btn.disabled = false;
+          btn.removeAttribute("disabled");
+          btn.style.pointerEvents = "auto";
+          btn.style.cursor = "pointer";
+          if (!btn.style.backgroundColor) {
+            btn.style.backgroundColor = "#4f46e5";
+            btn.style.borderColor = "#6366f1";
+            btn.style.color = "#ffffff";
+          }
+        });
       }
 
       window.loginWithGoogle = async function loginWithGoogle() {
@@ -1105,6 +1200,7 @@
         adminScreen: document.getElementById("admin-screen"),
         newGameBtn: document.getElementById("new-game-btn"),
         continueBtn: document.getElementById("continue-btn"),
+        homeSettingsBtn: document.getElementById("home-settings-btn"),
         homeAdminBtn: document.getElementById("home-admin-btn"),
         homeStatus: document.getElementById("home-status"),
         createForm: document.getElementById("create-form"),
@@ -1127,7 +1223,7 @@
         gameCharacterMeta: document.getElementById("game-character-meta"),
         gameBackHomeBtn: document.getElementById("game-back-home-btn"),
         gameNewCharacterBtn: document.getElementById("game-new-character-btn"),
-        gameMuteBtn: document.getElementById("game-mute-btn"),
+        gameSettingsBtn: document.getElementById("game-settings-btn"),
         gameAdminBtn: document.getElementById("game-admin-btn"),
         gameMoney: document.getElementById("game-money"),
         gameDateTime: document.getElementById("game-datetime"),
@@ -1175,6 +1271,12 @@
         adminFederationSave: document.getElementById("admin-federation-save"),
         adminFederationDelete: document.getElementById("admin-federation-delete"),
         adminFederationReload: document.getElementById("admin-federation-reload"),
+        settingsModal: document.getElementById("settings-modal"),
+        settingsCloseBtn: document.getElementById("settings-close-btn"),
+        settingsMeasurement: document.getElementById("settings-measurement"),
+        settingsLanguage: document.getElementById("settings-language"),
+        settingsMuted: document.getElementById("settings-muted"),
+        settingsStatus: document.getElementById("settings-status"),
       };
       const cloneData = (v) =>
         typeof structuredClone === "function"
@@ -1188,6 +1290,16 @@
           .replaceAll('"', "&quot;")
           .replaceAll("'", "&#039;");
       const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+      const DEFAULT_USER_SETTINGS = {
+        measurementSystem: "metric",
+        language: "en-US",
+        muted: false,
+      };
+      const SETTING_KEY_MAP = {
+        measurementSystem: "measurement_system",
+        language: "language",
+        muted: "muted",
+      };
 
       async function getUserSetting(key) {
         if (!window.currentUser?.id) return null;
@@ -1210,6 +1322,160 @@
             { onConflict: "user_id,key" },
           );
         if (error) throw error;
+      }
+
+      function formatHeightCm(valueCm) {
+        const cm = Number(valueCm);
+        if (userSettings.measurementSystem === "imperial") {
+          const inchesTotal = cm / 2.54;
+          const feet = Math.floor(inchesTotal / 12);
+          const inches = Math.round(inchesTotal - feet * 12);
+          return `${feet}'${inches}"`;
+        }
+        return `${cm} cm`;
+      }
+
+      function formatWeightKg(valueKg) {
+        const kg = Number(valueKg);
+        if (userSettings.measurementSystem === "imperial") {
+          return `${Math.round(kg * 2.2046226218)} lb`;
+        }
+        return `${kg} kg`;
+      }
+
+      function setSettingsStatus(message, tone = "neutral") {
+        const statusEl = document.getElementById("settings-status");
+        if (!statusEl) return;
+        const cls =
+          tone === "error"
+            ? "text-rose-300"
+            : tone === "success"
+              ? "text-emerald-300"
+              : "text-slate-400";
+        statusEl.className = `mt-3 text-xs ${cls}`;
+        statusEl.textContent = message || "";
+      }
+
+      function hydrateSettingsModal() {
+        const measurementEl = document.getElementById("settings-measurement");
+        const languageEl = document.getElementById("settings-language");
+        const mutedEl = document.getElementById("settings-muted");
+        if (!measurementEl || !languageEl || !mutedEl) return;
+        measurementEl.value = userSettings.measurementSystem;
+        languageEl.value = userSettings.language;
+        mutedEl.checked = Boolean(userSettings.muted);
+      }
+
+      function openSettingsModal() {
+        const modal = document.getElementById("settings-modal");
+        if (!modal) return;
+        if (window.location.hash !== "#settings-modal") {
+          window.location.hash = "settings-modal";
+        }
+        hydrateSettingsModal();
+        if (!window.isUserLoggedIn) {
+          setSettingsStatus("Login to persist settings in your account.");
+        } else {
+          setSettingsStatus("");
+        }
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        modal.style.display = "flex";
+        modal.style.zIndex = "1000";
+      }
+
+      function closeSettingsModal() {
+        const modal = document.getElementById("settings-modal");
+        if (!modal) return;
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+        modal.style.display = "none";
+        if (window.location.hash === "#settings-modal") {
+          if (history.replaceState) {
+            history.replaceState(
+              null,
+              document.title,
+              window.location.pathname + window.location.search,
+            );
+          } else {
+            window.location.hash = "";
+          }
+        }
+      }
+
+      function syncSettingsModalWithHash() {
+        const modal = document.getElementById("settings-modal");
+        if (!modal) return;
+        const shouldOpen = window.location.hash === "#settings-modal";
+        if (shouldOpen) {
+          hydrateSettingsModal();
+          if (!window.isUserLoggedIn) {
+            setSettingsStatus("Login to persist settings in your account.");
+          } else {
+            setSettingsStatus("");
+          }
+          modal.classList.remove("hidden");
+          modal.classList.add("flex");
+          modal.style.display = "flex";
+          modal.style.zIndex = "1000";
+        } else {
+          modal.classList.add("hidden");
+          modal.classList.remove("flex");
+          modal.style.display = "none";
+        }
+      }
+
+      async function saveSettingByField(field, value) {
+        if (!window.isUserLoggedIn) {
+          setSettingsStatus("Login required.", "error");
+          return;
+        }
+        userSettings[field] = value;
+        try {
+          await setUserSetting(SETTING_KEY_MAP[field], value);
+          setSettingsStatus("Saved.", "success");
+        } catch (error) {
+          setSettingsStatus(`Save failed: ${error.message}`, "error");
+          return;
+        }
+        if (field === "muted") {
+          showToast(userSettings.muted ? "Sounds muted" : "Sounds unmuted");
+        }
+        updateCreatePreview();
+        if (activeCharacter) {
+          refreshGameRows();
+          updateGameHeader();
+        }
+      }
+
+      async function refreshUserSettings() {
+        if (!window.isUserLoggedIn) {
+          userSettings = { ...DEFAULT_USER_SETTINGS };
+          hydrateSettingsModal();
+          return;
+        }
+        try {
+          const [measurementSystem, language, muted] = await Promise.all([
+            getUserSetting(SETTING_KEY_MAP.measurementSystem),
+            getUserSetting(SETTING_KEY_MAP.language),
+            getUserSetting(SETTING_KEY_MAP.muted),
+          ]);
+          userSettings = {
+            measurementSystem:
+              measurementSystem === "imperial" ? "imperial" : "metric",
+            language: language === "en-US" ? "en-US" : "en-US",
+            muted: isTruthySetting(muted),
+          };
+        } catch (error) {
+          console.error("Could not load user settings:", error);
+          userSettings = { ...DEFAULT_USER_SETTINGS };
+        }
+        hydrateSettingsModal();
+        updateCreatePreview();
+        if (activeCharacter) {
+          refreshGameRows();
+          updateGameHeader();
+        }
       }
 
       function isTruthySetting(value) {
@@ -1831,6 +2097,8 @@
           illnesses: raw.illnesses || [],
           injuries: raw.injuries || [],
           federations: raw.federations || [],
+          revision: Number(raw.revision ?? 0),
+          updatedAt: raw.updatedAt || null,
         };
       }
 
@@ -1845,6 +2113,8 @@
           active: Boolean(row.active),
           features: row.features || undefined,
           gameState: row.game_state || undefined,
+          revision: row.revision,
+          updatedAt: row.updated_at,
         });
       }
 
@@ -1957,21 +2227,61 @@
         return (data || []).map(mapDbCharacter);
       }
 
-      async function upsertActiveCharacterRow(character) {
+      async function fetchCharacterById(characterId) {
         const userId = getCurrentUserIdOrThrow();
-        const { error } = await window.supabaseClient
+        const { data, error } = await window.supabaseClient
           .from("character")
-          .update({
-            name: character.name,
-            gender: character.gender,
-            somatotype: character.somatotype,
-            active: character.active,
-            features: character.features,
-            game_state: character.gameState,
-          })
+          .select("*")
+          .eq("id", characterId)
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (error) throw error;
+        return data ? mapDbCharacter(data) : null;
+      }
+
+      async function upsertActiveCharacterRow(character, expectedRevision = null) {
+        const userId = getCurrentUserIdOrThrow();
+        const payload = {
+          name: character.name,
+          gender: character.gender,
+          somatotype: character.somatotype,
+          active: character.active,
+          features: character.features,
+          game_state: character.gameState,
+        };
+        if (Number.isFinite(Number(expectedRevision))) {
+          payload.revision = Number(expectedRevision) + 1;
+        }
+        let query = window.supabaseClient
+          .from("character")
+          .update(payload)
           .eq("id", character.id)
           .eq("user_id", userId);
-        if (error) throw error;
+        if (Number.isFinite(Number(expectedRevision))) {
+          query = query.eq("revision", Number(expectedRevision));
+        }
+        const { data, error } = await query.select("*").maybeSingle();
+        if (error) {
+          if (
+            Number.isFinite(Number(expectedRevision)) &&
+            String(error.message || "").toLowerCase().includes("revision")
+          ) {
+            const fallback = await window.supabaseClient
+              .from("character")
+              .update(payload)
+              .eq("id", character.id)
+              .eq("user_id", userId)
+              .select("*")
+              .maybeSingle();
+            if (fallback.error) throw fallback.error;
+            return fallback.data ? mapDbCharacter(fallback.data) : character;
+          }
+          throw error;
+        }
+        if (!data && Number.isFinite(Number(expectedRevision))) {
+          throw new Error("Character changed in another device. Please retry.");
+        }
+        return data ? mapDbCharacter(data) : character;
       }
       function getSvgParts(svgId) {
         const root = document.getElementById(svgId);
@@ -1988,12 +2298,17 @@
       const gameSvg = getSvgParts("game-character-svg");
       let createFeatures = getDefaultFeatures();
       let activeCharacter = null;
-      let isMuted = false;
+      let userSettings = { ...DEFAULT_USER_SETTINGS };
       let activeTab = "core";
       let activeAdminTab = "actions";
       let adminReturnScreen = "home";
       let selectedDrugId = null;
       let selectedFederationId = null;
+      let isRunningAction = false;
+      let characterSyncChannel = null;
+      let suppressSyncToastUntil = 0;
+      let isSyncingCharacter = false;
+      let pendingSyncNotify = false;
       let gameActions = [];
       let selectedActionId = null;
       const tabBadges = Object.fromEntries(
@@ -2172,7 +2487,7 @@
           somatotype: ui.characterSomatotypeInput.value,
           features: createFeatures,
         });
-        ui.previewSummary.textContent = `${createFeatures.age} yrs | ${createFeatures.height} cm | ${createFeatures.weight} kg | ${ui.characterSomatotypeInput.value.toUpperCase()}`;
+        ui.previewSummary.textContent = `${createFeatures.age} yrs | ${formatHeightCm(createFeatures.height)} | ${formatWeightKg(createFeatures.weight)} | ${ui.characterSomatotypeInput.value.toUpperCase()}`;
       }
       function bindProceduralInputs() {
         Object.entries(PROCEDURAL_TEMPLATE.core).forEach(([k, m]) => {
@@ -2260,9 +2575,9 @@
               : path === "features.ethnicity"
                 ? `${v}%`
                 : path === "features.height"
-                  ? `${v} cm`
+                  ? formatHeightCm(v)
                   : path === "features.weight"
-                    ? `${v} kg`
+                    ? formatWeightKg(v)
                     : String(v);
           row.querySelector("[data-value]").textContent = out;
         });
@@ -2307,20 +2622,6 @@
         ui.gameMoney.textContent = `$${activeCharacter.gameState.money}`;
         ui.gameDateTime.textContent = `${activeCharacter.gameState.inGameDate} ${activeCharacter.gameState.inGameTime}`;
       }
-      async function saveActiveCharacter() {
-        if (activeCharacter) await upsertActiveCharacterRow(activeCharacter);
-      }
-      function advanceGameTime(steps = 1) {
-        if (!activeCharacter) return;
-        const [hourStr, minStr] =
-          activeCharacter.gameState.inGameTime.split(":");
-        const d = new Date(
-          `${activeCharacter.gameState.inGameDate}T${hourStr}:${minStr}:00`,
-        );
-        d.setMinutes(d.getMinutes() + steps * 30);
-        activeCharacter.gameState.inGameDate = d.toISOString().slice(0, 10);
-        activeCharacter.gameState.inGameTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
-      }
       function getTabByPath(path) {
         if (path.startsWith("features.bodyParts.")) return "muscles";
         if (
@@ -2339,103 +2640,275 @@
         if (path.startsWith("federations")) return "federations";
         return null;
       }
-      async function applyDelta(path, delta, reason) {
-        if (!activeCharacter) return;
-        const currentValue = Number(getByPath(activeCharacter, path));
+
+      function clampPathValue(path, value) {
+        if (path.startsWith("features.bodyParts.")) return clamp(value, 50, 150);
+        if (path === "features.age") return clamp(value, 14, 70);
+        if (path === "features.height") return clamp(value, 145, 205);
+        if (path === "features.weight") return clamp(value, 45, 140);
+        if (path === "features.ethnicity") return clamp(value, 0, 100);
+        if (path.startsWith("drugs.") || path.startsWith("hormones.")) {
+          return Math.max(0, value);
+        }
+        return value;
+      }
+
+      function applyDraftDelta(character, path, delta, reason, changes) {
+        const currentValue = Number(getByPath(character, path));
         const safeCurrent = Number.isFinite(currentValue) ? currentValue : 0;
-        let next = safeCurrent + delta;
-        if (path.startsWith("features.bodyParts.")) next = clamp(next, 50, 150);
-        if (path === "features.age") next = clamp(next, 14, 70);
-        if (path === "features.height") next = clamp(next, 145, 205);
-        if (path === "features.weight") next = clamp(next, 45, 140);
-        if (path === "features.ethnicity") next = clamp(next, 0, 100);
+        const next = clampPathValue(path, safeCurrent + delta);
         const prev = safeCurrent;
         if (prev === next) return;
-        setByPath(activeCharacter, path, next);
-        if (path.startsWith("drugs.")) {
-          await saveEntityValue(
-            activeCharacter.id,
-            "drugs",
-            path.split(".")[1],
-            next,
-          );
-        }
-        if (path.startsWith("hormones.")) {
-          await saveEntityValue(
-            activeCharacter.id,
-            "hormones",
-            path.split(".")[1],
-            next,
-          );
-        }
-        const changedTab = getTabByPath(path);
-        if (changedTab && changedTab !== activeTab) {
-          tabBadges[changedTab] += 1;
-          queuePendingFlash(changedTab, path, next - prev);
-        } else {
-          flashLine(path, next - prev);
-        }
-        await saveActiveCharacter();
-        updateSvg(gameSvg, activeCharacter);
-        refreshGameRows();
-        renderGameTabs();
-        updateGameHeader();
-        showToast(
-          `${reason}: ${next > prev ? "+" : ""}${next - prev} (${path})`,
-          next > prev ? "good" : "bad",
-        );
+        setByPath(character, path, next);
+        changes.push({ path, delta: next - prev, reason });
       }
-      async function applyActionEffect(effect, actionName) {
+
+      function applyActionEffectToDraft(effect, actionName, draft, changes, tagOps) {
         const mode = effect.mode || "add";
         const path = effect.target_path;
         const value = Number(effect.value ?? 0);
-
         if (!path) return;
 
         if (mode === "add") {
-          await applyDelta(path, value, actionName);
+          applyDraftDelta(draft, path, value, actionName, changes);
           return;
         }
 
         if (mode === "set") {
-          const current = Number(getByPath(activeCharacter, path));
+          const current = Number(getByPath(draft, path));
           const safeCurrent = Number.isFinite(current) ? current : 0;
           const delta = value - safeCurrent;
-          if (delta !== 0) await applyDelta(path, delta, actionName);
+          if (delta !== 0) {
+            applyDraftDelta(draft, path, delta, actionName, changes);
+          }
           return;
         }
 
         if (mode === "add_tag" || mode === "remove_tag") {
           const [entity, key] = path.split(".");
           if (!entity || !key) return;
-          const shouldAdd = mode === "add_tag";
-          await setTagEntityValue(activeCharacter.id, entity, key, shouldAdd);
-          await loadCharacterRelations(activeCharacter);
-          renderGameTabs();
-          const changedTab = getTabByPath(entity);
+          tagOps.push({ entity, key, enabled: mode === "add_tag" });
+        }
+      }
+
+      function applyChangeFeedback(changes) {
+        changes.forEach((change) => {
+          const changedTab = getTabByPath(change.path);
           if (changedTab && changedTab !== activeTab) {
             tabBadges[changedTab] += 1;
+            queuePendingFlash(changedTab, change.path, change.delta);
+          } else {
+            flashLine(change.path, change.delta);
+          }
+          showToast(
+            `${change.reason}: ${change.delta > 0 ? "+" : ""}${change.delta} (${change.path})`,
+            change.delta > 0 ? "good" : "bad",
+          );
+        });
+      }
+
+      async function syncActiveCharacterFromServer(showToastOnSync = false) {
+        if (!activeCharacter) return;
+        if (isSyncingCharacter) {
+          pendingSyncNotify = pendingSyncNotify || showToastOnSync;
+          return;
+        }
+        isSyncingCharacter = true;
+        const syncNotify = pendingSyncNotify || showToastOnSync;
+        pendingSyncNotify = false;
+        try {
+          const latest = await fetchCharacterById(activeCharacter.id);
+          if (!latest) return;
+          const previousRevision = activeCharacter.revision;
+          activeCharacter = latest;
+          await loadCharacterRelations(activeCharacter);
+          updateSvg(gameSvg, activeCharacter);
+          updateGameHeader();
+          renderGameTabs();
+          renderGameActions();
+          if (
+            syncNotify &&
+            Date.now() > suppressSyncToastUntil &&
+            previousRevision !== activeCharacter.revision
+          ) {
+            showToast("Character synced from another device.", "neutral");
+          }
+        } catch (error) {
+          console.error("Character sync failed:", error);
+        } finally {
+          isSyncingCharacter = false;
+          if (pendingSyncNotify) {
+            const nextNotify = pendingSyncNotify;
+            pendingSyncNotify = false;
+            void syncActiveCharacterFromServer(nextNotify);
           }
         }
       }
 
+      function stopCharacterSync() {
+        if (characterSyncChannel) {
+          window.supabaseClient.removeChannel(characterSyncChannel);
+          characterSyncChannel = null;
+        }
+      }
+
+      function subscribeCharacterSync(characterId) {
+        stopCharacterSync();
+        if (!window.isUserLoggedIn || !characterId) return;
+        characterSyncChannel = window.supabaseClient
+          .channel(`character-sync-${characterId}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "UPDATE",
+              schema: "public",
+              table: "character",
+              filter: `id=eq.${characterId}`,
+            },
+            () => {
+              void syncActiveCharacterFromServer(true);
+            },
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "character_drug",
+              filter: `character_id=eq.${characterId}`,
+            },
+            () => void syncActiveCharacterFromServer(true),
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "character_hormone",
+              filter: `character_id=eq.${characterId}`,
+            },
+            () => void syncActiveCharacterFromServer(true),
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "character_illness",
+              filter: `character_id=eq.${characterId}`,
+            },
+            () => void syncActiveCharacterFromServer(true),
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "character_injury",
+              filter: `character_id=eq.${characterId}`,
+            },
+            () => void syncActiveCharacterFromServer(true),
+          )
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "character_federation",
+              filter: `character_id=eq.${characterId}`,
+            },
+            () => void syncActiveCharacterFromServer(true),
+          )
+          .subscribe();
+      }
+
       async function runDatabaseAction(actionId) {
+        if (isRunningAction || !activeCharacter) return;
         const action = gameActions.find((item) => String(item.id) === String(actionId));
-        if (!action || !activeCharacter) return;
-        if (!canRunAction(action, activeCharacter)) return;
+        if (!action) return;
 
-        for (const effect of action.effects || []) {
-          await applyActionEffect(effect, action.label || action.name || action.key || "Action");
-        }
+        isRunningAction = true;
+        try {
+          const latest = await fetchCharacterById(activeCharacter.id);
+          if (!latest) return;
+          activeCharacter = latest;
+          await loadCharacterRelations(activeCharacter);
 
-        const timeCost = Number(action.time_cost_half_hours ?? 1);
-        if (timeCost > 0) {
-          advanceGameTime(timeCost);
-          await saveActiveCharacter();
+          if (!canRunAction(action, activeCharacter)) {
+            showToast("Action conditions are no longer met.", "bad");
+            renderGameActions();
+            return;
+          }
+
+          const actionName = action.label || action.name || action.key || "Action";
+          const draft = cloneData(activeCharacter);
+          const changes = [];
+          const tagOps = [];
+
+          for (const effect of action.effects || []) {
+            applyActionEffectToDraft(effect, actionName, draft, changes, tagOps);
+          }
+
+          const timeCost = Number(action.time_cost_half_hours ?? 1);
+          if (timeCost > 0) {
+            const [hourStr, minStr] = draft.gameState.inGameTime.split(":");
+            const d = new Date(`${draft.gameState.inGameDate}T${hourStr}:${minStr}:00`);
+            d.setMinutes(d.getMinutes() + timeCost * 30);
+            draft.gameState.inGameDate = d.toISOString().slice(0, 10);
+            draft.gameState.inGameTime = `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+          }
+
+          suppressSyncToastUntil = Date.now() + 1200;
+          activeCharacter = await upsertActiveCharacterRow(draft, activeCharacter.revision);
+
+          for (const change of changes) {
+            if (change.path.startsWith("drugs.")) {
+              const key = change.path.split(".")[1];
+              await saveEntityValue(
+                activeCharacter.id,
+                "drugs",
+                key,
+                Number(getByPath(draft, change.path)),
+              );
+            }
+            if (change.path.startsWith("hormones.")) {
+              const key = change.path.split(".")[1];
+              await saveEntityValue(
+                activeCharacter.id,
+                "hormones",
+                key,
+                Number(getByPath(draft, change.path)),
+              );
+            }
+          }
+
+          for (const tagOp of tagOps) {
+            await setTagEntityValue(
+              activeCharacter.id,
+              tagOp.entity,
+              tagOp.key,
+              tagOp.enabled,
+            );
+            const changedTab = getTabByPath(tagOp.entity);
+            if (changedTab && changedTab !== activeTab) {
+              tabBadges[changedTab] += 1;
+            }
+          }
+
+          await loadCharacterRelations(activeCharacter);
+          updateSvg(gameSvg, activeCharacter);
+          refreshGameRows();
+          renderGameTabs();
           updateGameHeader();
+          applyChangeFeedback(changes);
+        } catch (error) {
+          console.error("Action execution failed:", error);
+          showToast(error.message || "Could not execute action.", "bad");
+          await syncActiveCharacterFromServer(false);
+        } finally {
+          isRunningAction = false;
+          renderGameActions();
         }
-
-        renderGameActions();
       }
       async function setActiveCharacter(characterId) {
         const userId = getCurrentUserIdOrThrow();
@@ -2478,7 +2951,7 @@
           ui.continueBtn.disabled = activeCount === 0;
           ui.homeStatus.textContent = totalCount
             ? `${totalCount} saved character(s). Active: ${activeCount}.`
-            : "No saved character found. Start with New Game.";
+            : "No saved character found. Start with Create Character.";
         } catch (error) {
           console.error("Failed to refresh characters:", error);
           ui.newGameBtn.disabled = true;
@@ -2556,6 +3029,7 @@
         updateGameHeader();
         renderGameTabs();
         renderGameActions();
+        subscribeCharacterSync(activeCharacter.id);
         setVisibleScreen("game");
       }
       async function deleteCharacter(characterId) {
@@ -2567,22 +3041,6 @@
           .eq("user_id", userId);
         if (error) throw error;
         await ensureOneActiveCharacter();
-      }
-      async function refreshMuteState() {
-        if (!window.isUserLoggedIn) {
-          isMuted = false;
-          ui.gameMuteBtn.textContent = "Mute Sounds";
-          return;
-        }
-        const setting = await getUserSetting("muted");
-        isMuted = Boolean(setting);
-        ui.gameMuteBtn.textContent = isMuted ? "Unmute Sounds" : "Mute Sounds";
-      }
-      async function setMuted(value) {
-        isMuted = value;
-        await setUserSetting("muted", isMuted);
-        ui.gameMuteBtn.textContent = isMuted ? "Unmute Sounds" : "Mute Sounds";
-        showToast(isMuted ? "Sounds muted" : "Sounds unmuted", "neutral");
       }
       ui.newGameBtn.addEventListener("click", () => {
         resetCreateFormToDefaults();
@@ -2683,19 +3141,72 @@
         updateGameHeader();
         renderGameTabs();
         renderGameActions();
+        subscribeCharacterSync(activeCharacter.id);
         setVisibleScreen("game");
         showToast("Character created and loaded", "good");
       });
       ui.gameBackHomeBtn.addEventListener("click", async () => {
+        stopCharacterSync();
         await refreshHomeState();
         setVisibleScreen("home");
       });
       ui.gameNewCharacterBtn.addEventListener("click", () => {
+        stopCharacterSync();
         resetCreateFormToDefaults();
         setVisibleScreen("create");
       });
-      ui.gameMuteBtn.addEventListener("click", async () => {
-        await setMuted(!isMuted);
+      if (ui.homeSettingsBtn) {
+        ui.homeSettingsBtn.addEventListener("click", () => {
+          openSettingsModal();
+        });
+      }
+      if (ui.gameSettingsBtn) {
+        ui.gameSettingsBtn.addEventListener("click", () => {
+          openSettingsModal();
+        });
+      }
+      if (ui.settingsCloseBtn) {
+        ui.settingsCloseBtn.addEventListener("click", () => {
+          closeSettingsModal();
+        });
+      }
+      if (ui.settingsModal) {
+        ui.settingsModal.addEventListener("click", (event) => {
+          if (event.target === ui.settingsModal) {
+            closeSettingsModal();
+          }
+        });
+      }
+      if (ui.settingsMeasurement) {
+        ui.settingsMeasurement.addEventListener("change", async () => {
+          await saveSettingByField(
+            "measurementSystem",
+            ui.settingsMeasurement.value,
+          );
+        });
+      }
+      if (ui.settingsLanguage) {
+        ui.settingsLanguage.addEventListener("change", async () => {
+          await saveSettingByField("language", ui.settingsLanguage.value);
+        });
+      }
+      if (ui.settingsMuted) {
+        ui.settingsMuted.addEventListener("change", async () => {
+          await saveSettingByField("muted", ui.settingsMuted.checked);
+        });
+      }
+      document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const openBtn = target.closest("#home-settings-btn, #game-settings-btn");
+        if (openBtn) {
+          openSettingsModal();
+          return;
+        }
+        const closeBtn = target.closest("#settings-close-btn");
+        if (closeBtn) {
+          closeSettingsModal();
+        }
       });
       ui.homeAdminBtn.addEventListener("click", async () => {
         await openAdminScreen("home");
@@ -2838,15 +3349,21 @@
       renderProceduralControls();
       bindProceduralInputs();
       resetCreateFormToDefaults();
+      ensureSettingsButtonsUsable();
       clearActionForm();
       clearAdminCatalogForm("drug");
       clearAdminCatalogForm("federation");
       renderAdminTabs();
+      window.openSettingsModal = openSettingsModal;
+      window.closeSettingsModal = closeSettingsModal;
+      window.addEventListener("hashchange", syncSettingsModalWithHash);
+      syncSettingsModalWithHash();
       window.refreshHomeState = refreshHomeState;
-      window.refreshMuteState = refreshMuteState;
+      window.refreshUserSettings = refreshUserSettings;
       window.refreshAdminAccess = refreshAdminAccess;
+      window.stopCharacterSync = stopCharacterSync;
       refreshHomeState();
-      refreshMuteState();
+      refreshUserSettings();
       refreshAdminAccess();
     </script>
   </body>
