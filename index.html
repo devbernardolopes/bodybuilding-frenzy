@@ -1087,6 +1087,7 @@
         TAB_CONFIG.map((tab) => [tab.key, 0]),
       );
       const statLineMap = new Map();
+      const pendingTabFlashes = new Map();
       function setVisibleScreen(name) {
         ui.homeScreen.classList.add("hidden");
         ui.createScreen.classList.add("hidden");
@@ -1134,6 +1135,23 @@
             ),
           1300,
         );
+      }
+      function queuePendingFlash(tab, path, delta) {
+        const entries = pendingTabFlashes.get(tab) || [];
+        entries.push({ path, delta });
+        pendingTabFlashes.set(tab, entries);
+      }
+      function flushPendingFlashes(tab) {
+        const entries = pendingTabFlashes.get(tab);
+        if (!entries || !entries.length) return;
+
+        const latestByPath = new Map();
+        entries.forEach((entry) => latestByPath.set(entry.path, entry.delta));
+        pendingTabFlashes.delete(tab);
+
+        Array.from(latestByPath.entries()).forEach(([path, delta], index) => {
+          setTimeout(() => flashLine(path, delta), index * 60);
+        });
       }
       const sliderRow = (id, label, min, max, step, value, suffix) =>
         `<label class="grid gap-1"><div class="flex items-center justify-between text-sm text-slate-300"><span>${label}</span><span id="${id}-value">${value}${suffix}</span></div><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}" class="w-full" /></label>`;
@@ -1438,13 +1456,15 @@
         const changedTab = getTabByPath(path);
         if (changedTab && changedTab !== activeTab) {
           tabBadges[changedTab] += 1;
+          queuePendingFlash(changedTab, path, next - prev);
+        } else {
+          flashLine(path, next - prev);
         }
         await saveActiveCharacter();
         updateSvg(gameSvg, activeCharacter);
         refreshGameRows();
         renderGameTabs();
         updateGameHeader();
-        flashLine(path, next - prev);
         showToast(
           `${reason}: ${next > prev ? "+" : ""}${next - prev} (${path})`,
           next > prev ? "good" : "bad",
@@ -1750,6 +1770,7 @@
         activeTab = target.dataset.tab;
         tabBadges[activeTab] = 0;
         renderGameTabs();
+        flushPendingFlashes(activeTab);
       });
       ui.gameScreen.addEventListener("click", async (event) => {
         const target = event.target;
