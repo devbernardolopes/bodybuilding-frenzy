@@ -662,10 +662,13 @@
       }
 
       window.loginWithGoogle = async function loginWithGoogle() {
+        const redirectUrl = new URL(window.location.href);
+        redirectUrl.search = "";
+        redirectUrl.hash = "";
         await supabaseClient.auth.signInWithOAuth({
           provider: "google",
           options: {
-            redirectTo: window.location.origin,
+            redirectTo: redirectUrl.toString(),
           },
         });
       };
