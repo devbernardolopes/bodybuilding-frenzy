@@ -564,47 +564,81 @@
             <div
               class="mt-4 rounded-lg border border-slate-800 bg-slate-900/80 p-3"
             >
-              <h4 class="text-sm font-semibold">Quick Simulation Actions</h4>
+              <h4 class="text-sm font-semibold">Actions</h4>
               <p class="text-xs text-slate-400">
-                Temporary buttons for autosave, toasts, and stat color tests.
+                Actions are loaded from the database with conditions/effects.
               </p>
-              <div class="mt-3 grid gap-2 sm:grid-cols-2">
-                <button
-                  data-action="upper"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Upper Body Workout
-                </button>
-                <button
-                  data-action="legs"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Leg Day
-                </button>
-                <button
-                  data-action="bulk"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Bulk Meal Plan
-                </button>
-                <button
-                  data-action="cut"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Cutting Plan
-                </button>
-                <button
-                  data-action="test"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Inject Testosterone
-                </button>
-                <button
-                  data-action="nextDay"
-                  class="rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm font-semibold hover:bg-slate-600"
-                >
-                  Advance 1 Day
-                </button>
+              <div id="action-buttons" class="mt-3 grid gap-2 sm:grid-cols-2"></div>
+            </div>
+            <div
+              class="mt-4 rounded-lg border border-slate-800 bg-slate-900/80 p-3"
+            >
+              <h4 class="text-sm font-semibold">Action Admin</h4>
+              <p class="text-xs text-slate-400">
+                Create/edit actions, conditions and effects directly from UI.
+              </p>
+              <div id="action-admin-status" class="mt-2 text-xs text-slate-400"></div>
+              <div class="mt-3 grid gap-3 lg:grid-cols-[minmax(220px,0.9fr)_minmax(0,1.1fr)]">
+                <div>
+                  <div id="action-admin-list" class="grid gap-2"></div>
+                </div>
+                <div class="grid gap-2">
+                  <input id="action-admin-id" type="hidden" />
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Key</span>
+                    <input id="action-admin-key" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="upper_workout" />
+                  </label>
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Name</span>
+                    <input id="action-admin-name" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Upper Workout" />
+                  </label>
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Label</span>
+                    <input id="action-admin-label" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Upper Body Workout" />
+                  </label>
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Description</span>
+                    <input id="action-admin-description" type="text" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" placeholder="Build upper body, costs gym fee" />
+                  </label>
+                  <div class="grid grid-cols-3 gap-2">
+                    <label class="grid gap-1 text-xs">
+                      <span class="text-slate-300">Color</span>
+                      <select id="action-admin-color" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm">
+                        <option value="slate">slate</option>
+                        <option value="emerald">emerald</option>
+                        <option value="sky">sky</option>
+                        <option value="amber">amber</option>
+                        <option value="rose">rose</option>
+                      </select>
+                    </label>
+                    <label class="grid gap-1 text-xs">
+                      <span class="text-slate-300">Time Cost</span>
+                      <input id="action-admin-time" type="number" min="0" step="1" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" value="1" />
+                    </label>
+                    <label class="grid gap-1 text-xs">
+                      <span class="text-slate-300">Sort</span>
+                      <input id="action-admin-sort" type="number" step="1" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 text-sm" value="0" />
+                    </label>
+                  </div>
+                  <label class="mt-1 inline-flex items-center gap-2 text-xs text-slate-200">
+                    <input id="action-admin-active" type="checkbox" checked />
+                    Active
+                  </label>
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Conditions JSON</span>
+                    <textarea id="action-admin-conditions" rows="5" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"></textarea>
+                  </label>
+                  <label class="grid gap-1 text-xs">
+                    <span class="text-slate-300">Effects JSON</span>
+                    <textarea id="action-admin-effects" rows="7" class="rounded-md border border-slate-700 bg-slate-950 px-2 py-1.5 font-mono text-xs"></textarea>
+                  </label>
+                  <div class="mt-1 flex flex-wrap gap-2">
+                    <button id="action-admin-new" type="button" class="rounded-md border border-slate-600 bg-slate-700 px-2.5 py-1.5 text-xs font-semibold hover:bg-slate-600">New</button>
+                    <button id="action-admin-save" type="button" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Save</button>
+                    <button id="action-admin-delete" type="button" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button>
+                    <button id="action-admin-reload" type="button" class="rounded-md border border-sky-500 bg-sky-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-sky-500">Reload</button>
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -823,6 +857,16 @@
         injuries: [],
         federations: [],
       };
+      const ACTION_COLOR_CLASSES = {
+        slate:
+          "border-slate-600 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed",
+        emerald:
+          "border-emerald-500 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed",
+        sky: "border-sky-500 bg-sky-600 hover:bg-sky-500 disabled:opacity-50 disabled:cursor-not-allowed",
+        amber:
+          "border-amber-500 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed",
+        rose: "border-rose-500 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 disabled:cursor-not-allowed",
+      };
       const ui = {
         toastContainer: document.getElementById("toast-container"),
         homeScreen: document.getElementById("home-screen"),
@@ -857,6 +901,24 @@
         gameDateTime: document.getElementById("game-datetime"),
         gameTabs: document.getElementById("game-tabs"),
         gameTabContent: document.getElementById("game-tab-content"),
+        actionButtons: document.getElementById("action-buttons"),
+        actionAdminStatus: document.getElementById("action-admin-status"),
+        actionAdminList: document.getElementById("action-admin-list"),
+        actionAdminId: document.getElementById("action-admin-id"),
+        actionAdminKey: document.getElementById("action-admin-key"),
+        actionAdminName: document.getElementById("action-admin-name"),
+        actionAdminLabel: document.getElementById("action-admin-label"),
+        actionAdminDescription: document.getElementById("action-admin-description"),
+        actionAdminColor: document.getElementById("action-admin-color"),
+        actionAdminTime: document.getElementById("action-admin-time"),
+        actionAdminSort: document.getElementById("action-admin-sort"),
+        actionAdminActive: document.getElementById("action-admin-active"),
+        actionAdminConditions: document.getElementById("action-admin-conditions"),
+        actionAdminEffects: document.getElementById("action-admin-effects"),
+        actionAdminNew: document.getElementById("action-admin-new"),
+        actionAdminSave: document.getElementById("action-admin-save"),
+        actionAdminDelete: document.getElementById("action-admin-delete"),
+        actionAdminReload: document.getElementById("action-admin-reload"),
       };
       const cloneData = (v) =>
         typeof structuredClone === "function"
@@ -907,6 +969,350 @@
           },
         );
         await Promise.all(jobs);
+      }
+
+      function getActionColorClasses(colorToken) {
+        return ACTION_COLOR_CLASSES[colorToken] || ACTION_COLOR_CLASSES.slate;
+      }
+
+      function evaluateActionCondition(condition, character) {
+        const actual = getByPath(character, condition.field_path);
+        const expected = condition.value;
+        const op = condition.operator || ">=";
+
+        if (op === ">=") return Number(actual) >= Number(expected);
+        if (op === "<=") return Number(actual) <= Number(expected);
+        if (op === ">") return Number(actual) > Number(expected);
+        if (op === "<") return Number(actual) < Number(expected);
+        if (op === "==") return actual === expected;
+        if (op === "!=") return actual !== expected;
+        if (op === "in") return Array.isArray(expected) && expected.includes(actual);
+        if (op === "not_in")
+          return Array.isArray(expected) && !expected.includes(actual);
+        if (op === "between") {
+          if (Array.isArray(expected) && expected.length === 2) {
+            return Number(actual) >= Number(expected[0]) && Number(actual) <= Number(expected[1]);
+          }
+          return false;
+        }
+        return true;
+      }
+
+      function canRunAction(action, character) {
+        if (!action || !character) return false;
+        return (action.conditions || []).every((condition) =>
+          evaluateActionCondition(condition, character),
+        );
+      }
+
+      async function loadGameActions() {
+        const { data: actions, error: actionsError } = await window.supabaseClient
+          .from("game_action")
+          .select("*")
+          .order("sort_order", { ascending: true });
+        if (actionsError) throw actionsError;
+
+        const actionList = actions || [];
+        if (!actionList.length) {
+          gameActions = [];
+          return;
+        }
+
+        const ids = actionList.map((action) => action.id);
+        const [conditionsRes, effectsRes] = await Promise.all([
+          window.supabaseClient
+            .from("game_action_condition")
+            .select("*")
+            .in("action_id", ids)
+            .order("sort_order", { ascending: true }),
+          window.supabaseClient
+            .from("game_action_effect")
+            .select("*")
+            .in("action_id", ids)
+            .order("sort_order", { ascending: true }),
+        ]);
+
+        if (conditionsRes.error) throw conditionsRes.error;
+        if (effectsRes.error) throw effectsRes.error;
+
+        const groupedConditions = new Map();
+        (conditionsRes.data || []).forEach((row) => {
+          const list = groupedConditions.get(row.action_id) || [];
+          list.push(row);
+          groupedConditions.set(row.action_id, list);
+        });
+
+        const groupedEffects = new Map();
+        (effectsRes.data || []).forEach((row) => {
+          const list = groupedEffects.get(row.action_id) || [];
+          list.push(row);
+          groupedEffects.set(row.action_id, list);
+        });
+
+        gameActions = actionList.map((action) => ({
+          ...action,
+          conditions: groupedConditions.get(action.id) || [],
+          effects: groupedEffects.get(action.id) || [],
+        }));
+
+        if (
+          selectedActionId &&
+          !gameActions.some((action) => String(action.id) === String(selectedActionId))
+        ) {
+          selectedActionId = null;
+        }
+      }
+
+      function renderGameActions() {
+        if (!ui.actionButtons) return;
+        const visibleActions = gameActions.filter((action) => action.active);
+        if (!visibleActions.length) {
+          ui.actionButtons.innerHTML =
+            '<div class="text-sm text-slate-400">No actions configured.</div>';
+          renderActionAdminList();
+          return;
+        }
+
+        ui.actionButtons.innerHTML = visibleActions
+          .map((action) => {
+            const enabled = canRunAction(action, activeCharacter);
+            const color = getActionColorClasses(action.color_token);
+            const description = action.description
+              ? `<div class="text-[11px] text-slate-200/80">${escapeHtml(action.description)}</div>`
+              : "";
+            return `<button data-game-action-id="${action.id}" class="rounded-md border px-3 py-2 text-left text-sm font-semibold transition ${color}" ${enabled ? "" : "disabled"}><div>${escapeHtml(action.label || action.name || action.key)}</div>${description}</button>`;
+          })
+          .join("");
+        renderActionAdminList();
+      }
+
+      function setActionAdminStatus(message, tone = "neutral") {
+        if (!ui.actionAdminStatus) return;
+        const toneClass =
+          tone === "error"
+            ? "text-rose-300"
+            : tone === "success"
+              ? "text-emerald-300"
+              : "text-slate-400";
+        ui.actionAdminStatus.className = `mt-2 text-xs ${toneClass}`;
+        ui.actionAdminStatus.textContent = message || "";
+      }
+
+      function clearActionForm() {
+        selectedActionId = null;
+        ui.actionAdminId.value = "";
+        ui.actionAdminKey.value = "";
+        ui.actionAdminName.value = "";
+        ui.actionAdminLabel.value = "";
+        ui.actionAdminDescription.value = "";
+        ui.actionAdminColor.value = "slate";
+        ui.actionAdminTime.value = "1";
+        ui.actionAdminSort.value = "0";
+        ui.actionAdminActive.checked = true;
+        ui.actionAdminConditions.value = "[]";
+        ui.actionAdminEffects.value = "[]";
+      }
+
+      function fillActionForm(action) {
+        selectedActionId = action.id;
+        ui.actionAdminId.value = String(action.id);
+        ui.actionAdminKey.value = action.key || "";
+        ui.actionAdminName.value = action.name || "";
+        ui.actionAdminLabel.value = action.label || "";
+        ui.actionAdminDescription.value = action.description || "";
+        ui.actionAdminColor.value = action.color_token || "slate";
+        ui.actionAdminTime.value = String(action.time_cost_half_hours ?? 1);
+        ui.actionAdminSort.value = String(action.sort_order ?? 0);
+        ui.actionAdminActive.checked = Boolean(action.active);
+        ui.actionAdminConditions.value = JSON.stringify(
+          (action.conditions || []).map((c) => ({
+            field_path: c.field_path,
+            operator: c.operator,
+            value: c.value,
+            sort_order: c.sort_order ?? 0,
+          })),
+          null,
+          2,
+        );
+        ui.actionAdminEffects.value = JSON.stringify(
+          (action.effects || []).map((e) => ({
+            target_path: e.target_path,
+            mode: e.mode,
+            value: e.value,
+            sort_order: e.sort_order ?? 0,
+          })),
+          null,
+          2,
+        );
+      }
+
+      function renderActionAdminList() {
+        if (!ui.actionAdminList) return;
+        if (!gameActions.length) {
+          ui.actionAdminList.innerHTML =
+            '<div class="text-xs text-slate-400">No actions found.</div>';
+          return;
+        }
+        ui.actionAdminList.innerHTML = gameActions
+          .map((action) => {
+            const selected = String(selectedActionId) === String(action.id);
+            return `<button type="button" data-admin-action-id="${action.id}" class="rounded-md border px-2 py-1.5 text-left text-xs ${selected ? "border-emerald-500 bg-emerald-600 text-white" : "border-slate-700 bg-slate-800 text-slate-200"}"><div class="font-semibold">${escapeHtml(action.label || action.name || action.key)}</div><div class="text-[10px] ${selected ? "text-emerald-100" : "text-slate-400"}">${escapeHtml(action.key)} | ${action.active ? "active" : "inactive"}</div></button>`;
+          })
+          .join("");
+      }
+
+      function parseJsonArrayInput(rawValue, label) {
+        try {
+          const parsed = JSON.parse(rawValue || "[]");
+          if (!Array.isArray(parsed)) {
+            throw new Error(`${label} must be a JSON array.`);
+          }
+          return parsed;
+        } catch (error) {
+          throw new Error(`${label} JSON invalid: ${error.message}`);
+        }
+      }
+
+      async function saveActionFromPanel() {
+        const key = ui.actionAdminKey.value.trim();
+        const name = ui.actionAdminName.value.trim();
+        if (!key || !name) {
+          setActionAdminStatus("Key and Name are required.", "error");
+          return;
+        }
+
+        let conditions = [];
+        let effects = [];
+        try {
+          conditions = parseJsonArrayInput(
+            ui.actionAdminConditions.value,
+            "Conditions",
+          );
+          effects = parseJsonArrayInput(ui.actionAdminEffects.value, "Effects");
+        } catch (error) {
+          setActionAdminStatus(error.message, "error");
+          return;
+        }
+
+        const basePayload = {
+          key,
+          name,
+          label: ui.actionAdminLabel.value.trim() || name,
+          description: ui.actionAdminDescription.value.trim() || null,
+          color_token: ui.actionAdminColor.value,
+          time_cost_half_hours: Number(ui.actionAdminTime.value || 0),
+          sort_order: Number(ui.actionAdminSort.value || 0),
+          active: ui.actionAdminActive.checked,
+        };
+
+        let actionId = selectedActionId;
+        if (!actionId) {
+          const { data, error } = await window.supabaseClient
+            .from("game_action")
+            .insert(basePayload)
+            .select("id")
+            .single();
+          if (error) {
+            setActionAdminStatus(`Create failed: ${error.message}`, "error");
+            return;
+          }
+          actionId = data.id;
+        } else {
+          const { error } = await window.supabaseClient
+            .from("game_action")
+            .update(basePayload)
+            .eq("id", actionId);
+          if (error) {
+            setActionAdminStatus(`Update failed: ${error.message}`, "error");
+            return;
+          }
+        }
+
+        const deleteConds = await window.supabaseClient
+          .from("game_action_condition")
+          .delete()
+          .eq("action_id", actionId);
+        if (deleteConds.error) {
+          setActionAdminStatus(
+            `Condition cleanup failed: ${deleteConds.error.message}`,
+            "error",
+          );
+          return;
+        }
+
+        const deleteEffects = await window.supabaseClient
+          .from("game_action_effect")
+          .delete()
+          .eq("action_id", actionId);
+        if (deleteEffects.error) {
+          setActionAdminStatus(
+            `Effect cleanup failed: ${deleteEffects.error.message}`,
+            "error",
+          );
+          return;
+        }
+
+        if (conditions.length) {
+          const payload = conditions.map((c, i) => ({
+            action_id: actionId,
+            field_path: c.field_path,
+            operator: c.operator,
+            value: c.value,
+            sort_order: Number(c.sort_order ?? i),
+          }));
+          const { error } = await window.supabaseClient
+            .from("game_action_condition")
+            .insert(payload);
+          if (error) {
+            setActionAdminStatus(`Condition save failed: ${error.message}`, "error");
+            return;
+          }
+        }
+
+        if (effects.length) {
+          const payload = effects.map((e, i) => ({
+            action_id: actionId,
+            target_path: e.target_path,
+            mode: e.mode,
+            value: e.value ?? null,
+            sort_order: Number(e.sort_order ?? i),
+          }));
+          const { error } = await window.supabaseClient
+            .from("game_action_effect")
+            .insert(payload);
+          if (error) {
+            setActionAdminStatus(`Effect save failed: ${error.message}`, "error");
+            return;
+          }
+        }
+
+        await loadGameActions();
+        const updated = gameActions.find((a) => String(a.id) === String(actionId));
+        if (updated) fillActionForm(updated);
+        renderGameActions();
+        renderActionAdminList();
+        setActionAdminStatus("Action saved.", "success");
+      }
+
+      async function deleteActionFromPanel() {
+        if (!selectedActionId) {
+          setActionAdminStatus("Select an action first.", "error");
+          return;
+        }
+        if (!window.confirm("Delete selected action?")) return;
+        const { error } = await window.supabaseClient
+          .from("game_action")
+          .delete()
+          .eq("id", selectedActionId);
+        if (error) {
+          setActionAdminStatus(`Delete failed: ${error.message}`, "error");
+          return;
+        }
+        await loadGameActions();
+        clearActionForm();
+        renderGameActions();
+        renderActionAdminList();
+        setActionAdminStatus("Action deleted.", "success");
       }
       function getDefaultFeatures() {
         const bodyParts = {};
@@ -1033,6 +1439,29 @@
         if (error) throw error;
       }
 
+      async function setTagEntityValue(characterId, entity, key, enabled) {
+        const cfg = ENTITY_CONFIG[entity];
+        const def = catalogs[entity].find((item) => item.key === key);
+        if (!def) return;
+
+        if (enabled) {
+          const { error } = await window.supabaseClient
+            .from(cfg.characterTable)
+            .upsert(
+              { character_id: characterId, [cfg.fk]: def.id, value: 1 },
+              { onConflict: `character_id,${cfg.fk}` },
+            );
+          if (error) throw error;
+        } else {
+          const { error } = await window.supabaseClient
+            .from(cfg.characterTable)
+            .delete()
+            .eq("character_id", characterId)
+            .eq(cfg.fk, def.id);
+          if (error) throw error;
+        }
+      }
+
       function getCurrentUserIdOrThrow() {
         const id = window.currentUser?.id;
         if (!id) throw new Error("User not logged in");
@@ -1083,6 +1512,8 @@
       let activeCharacter = null;
       let isMuted = false;
       let activeTab = "core";
+      let gameActions = [];
+      let selectedActionId = null;
       const tabBadges = Object.fromEntries(
         TAB_CONFIG.map((tab) => [tab.key, 0]),
       );
@@ -1470,50 +1901,57 @@
           next > prev ? "good" : "bad",
         );
       }
-      async function runQuickAction(action) {
-        const actions = {
-          upper: async () => {
-            await applyDelta("features.bodyParts.biceps", 2, "Upper workout");
-            await applyDelta("features.bodyParts.triceps", 2, "Upper workout");
-            await applyDelta("features.bodyParts.forearms", 1, "Upper workout");
-            await applyDelta("gameState.money", -20, "Gym cost");
-          },
-          legs: async () => {
-            await applyDelta("features.bodyParts.legs", 2, "Leg day");
-            await applyDelta("features.bodyParts.hamstrings", 2, "Leg day");
-            await applyDelta("features.bodyParts.calves", 1, "Leg day");
-            await applyDelta("features.bodyParts.glutes", 1, "Leg day");
-            await applyDelta("gameState.money", -25, "Gym cost");
-          },
-          bulk: async () => {
-            await applyDelta("features.weight", 1, "Bulk plan");
-            await applyDelta("gameState.money", -35, "Nutrition cost");
-          },
-          cut: async () => {
-            await applyDelta("features.weight", -1, "Cutting plan");
-            await applyDelta("features.bodyParts.lats", 1, "Conditioning");
-            await applyDelta("gameState.money", -30, "Nutrition cost");
-          },
-          test: async () => {
-            await applyDelta("drugs.testosterone", 10, "Compound use");
-            await applyDelta("hormones.testosterone", 3, "Hormone response");
-            await applyDelta("hormones.cortisol", -1, "Hormone response");
-            await applyDelta("gameState.money", -80, "Compound cost");
-          },
-          nextDay: async () => {
-            advanceGameTime(48);
-            await saveActiveCharacter();
-            updateGameHeader();
-            showToast("Advanced to next day", "neutral");
-          },
-        };
-        if (!actions[action]) return;
-        await actions[action]();
-        if (action !== "nextDay") {
-          advanceGameTime(1);
+      async function applyActionEffect(effect, actionName) {
+        const mode = effect.mode || "add";
+        const path = effect.target_path;
+        const value = Number(effect.value ?? 0);
+
+        if (!path) return;
+
+        if (mode === "add") {
+          await applyDelta(path, value, actionName);
+          return;
+        }
+
+        if (mode === "set") {
+          const current = Number(getByPath(activeCharacter, path));
+          const safeCurrent = Number.isFinite(current) ? current : 0;
+          const delta = value - safeCurrent;
+          if (delta !== 0) await applyDelta(path, delta, actionName);
+          return;
+        }
+
+        if (mode === "add_tag" || mode === "remove_tag") {
+          const [entity, key] = path.split(".");
+          if (!entity || !key) return;
+          const shouldAdd = mode === "add_tag";
+          await setTagEntityValue(activeCharacter.id, entity, key, shouldAdd);
+          await loadCharacterRelations(activeCharacter);
+          renderGameTabs();
+          const changedTab = getTabByPath(entity);
+          if (changedTab && changedTab !== activeTab) {
+            tabBadges[changedTab] += 1;
+          }
+        }
+      }
+
+      async function runDatabaseAction(actionId) {
+        const action = gameActions.find((item) => String(item.id) === String(actionId));
+        if (!action || !activeCharacter) return;
+        if (!canRunAction(action, activeCharacter)) return;
+
+        for (const effect of action.effects || []) {
+          await applyActionEffect(effect, action.label || action.name || action.key || "Action");
+        }
+
+        const timeCost = Number(action.time_cost_half_hours ?? 1);
+        if (timeCost > 0) {
+          advanceGameTime(timeCost);
           await saveActiveCharacter();
           updateGameHeader();
         }
+
+        renderGameActions();
       }
       async function setActiveCharacter(characterId) {
         const userId = getCurrentUserIdOrThrow();
@@ -1587,7 +2025,6 @@
         ui.characterList.innerHTML = characters
           .map((raw) => {
             const c = normalizeCharacter(raw);
-            return `<div class="grid grid-cols-[1.5fr,1fr,1fr,auto] items-center gap-3 px-4 py-3 text-sm"><div><div class="font-semibold">${escapeHtml(c.name || "Unnamed")}</div><div class="text-xs text-slate-400">ID ${c.id} | ${c.createdAt ? new Date(c.createdAt).toLocaleString() : "Unknown date"}</div></div><div class="text-slate-300">${escapeHtml(formatCharacterBuild(c))}</div><div>${c.active ? '<span class="rounded-full bg-emerald-600/20 px-2 py-1 text-xs font-semibold text-emerald-300">Active</span>' : '<span class="text-xs text-slate-400">Inactive</span>'}</div><div class="flex gap-2"><button data-action="select" data-id="${c.id}" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Select</button><button data-action="delete" data-id="${c.id}" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button></div></div>`;
             return `<div class="grid grid-cols-[1.5fr_1fr_1fr_auto] items-center gap-3 px-4 py-3 text-sm"><div><div class="font-semibold">${escapeHtml(c.name || "Unnamed")}</div><div class="text-xs text-slate-400">ID ${c.id} | ${c.createdAt ? new Date(c.createdAt).toLocaleString() : "Unknown date"}</div></div><div class="text-slate-300">${escapeHtml(formatCharacterBuild(c))}</div><div>${c.active ? '<span class="rounded-full bg-emerald-600/20 px-2 py-1 text-xs font-semibold text-emerald-300">Active</span>' : '<span class="text-xs text-slate-400">Inactive</span>'}</div><div class="flex gap-2"><button data-action="select" data-id="${c.id}" class="rounded-md border border-emerald-500 bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-emerald-500">Select</button><button data-action="delete" data-id="${c.id}" class="rounded-md border border-rose-500 bg-rose-600 px-2.5 py-1.5 text-xs font-semibold hover:bg-rose-500">Delete</button></div></div>`;
           })
           .join("");
@@ -1621,11 +2058,20 @@
         activeCharacter = character;
         await loadCharacterRelations(activeCharacter);
         Object.keys(tabBadges).forEach((key) => (tabBadges[key] = 0));
-        if (!TAB_CONFIG.some((tab) => tab.key === activeTab))
+        const savedTab = await getUserSetting("ui_last_tab");
+        if (
+          typeof savedTab === "string" &&
+          TAB_CONFIG.some((tab) => tab.key === savedTab)
+        ) {
+          activeTab = savedTab;
+        } else if (!TAB_CONFIG.some((tab) => tab.key === activeTab)) {
           activeTab = TAB_CONFIG[0].key;
+        }
+        await loadGameActions();
         updateSvg(gameSvg, activeCharacter);
         updateGameHeader();
         renderGameTabs();
+        renderGameActions();
         setVisibleScreen("game");
       }
       async function deleteCharacter(characterId) {
@@ -1673,10 +2119,12 @@
         setVisibleScreen("home");
       });
       ui.characterList.addEventListener("click", async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLButtonElement)) return;
-        const action = target.dataset.action;
-        const id = Number(target.dataset.id);
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const target = origin.closest("button[data-action][data-id]");
+        if (!target) return;
+        const action = target.getAttribute("data-action");
+        const id = Number(target.getAttribute("data-id"));
         if (!action || !id) return;
         if (action === "select") {
           await setActiveCharacter(id);
@@ -1745,10 +2193,12 @@
         Object.keys(tabBadges).forEach((key) => (tabBadges[key] = 0));
         if (!TAB_CONFIG.some((tab) => tab.key === activeTab))
           activeTab = TAB_CONFIG[0].key;
+        await loadGameActions();
         await refreshHomeState();
         updateSvg(gameSvg, activeCharacter);
         updateGameHeader();
         renderGameTabs();
+        renderGameActions();
         setVisibleScreen("game");
         showToast("Character created and loaded", "good");
       });
@@ -1763,24 +2213,69 @@
       ui.gameMuteBtn.addEventListener("click", async () => {
         await setMuted(!isMuted);
       });
-      ui.gameTabs.addEventListener("click", (event) => {
+      ui.actionAdminList.addEventListener("click", (event) => {
         const target = event.target;
-        if (!(target instanceof HTMLButtonElement) || !target.dataset.tab)
-          return;
-        activeTab = target.dataset.tab;
+        if (!(target instanceof HTMLElement)) return;
+        const btn = target.closest("button[data-admin-action-id]");
+        if (!btn) return;
+        const actionId = btn.getAttribute("data-admin-action-id");
+        const action = gameActions.find((a) => String(a.id) === String(actionId));
+        if (!action) return;
+        fillActionForm(action);
+        renderActionAdminList();
+        setActionAdminStatus("");
+      });
+      ui.actionAdminNew.addEventListener("click", () => {
+        clearActionForm();
+        renderActionAdminList();
+        setActionAdminStatus("New action form ready.");
+      });
+      ui.actionAdminSave.addEventListener("click", async () => {
+        await saveActionFromPanel();
+      });
+      ui.actionAdminDelete.addEventListener("click", async () => {
+        await deleteActionFromPanel();
+      });
+      ui.actionAdminReload.addEventListener("click", async () => {
+        try {
+          await loadGameActions();
+          renderGameActions();
+          if (selectedActionId) {
+            const action = gameActions.find(
+              (a) => String(a.id) === String(selectedActionId),
+            );
+            if (action) fillActionForm(action);
+          }
+          setActionAdminStatus("Actions reloaded.", "success");
+        } catch (error) {
+          setActionAdminStatus(`Reload failed: ${error.message}`, "error");
+        }
+      });
+      ui.gameTabs.addEventListener("click", async (event) => {
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const target = origin.closest("button[data-tab]");
+        if (!target) return;
+        activeTab = target.getAttribute("data-tab");
         tabBadges[activeTab] = 0;
+        await setUserSetting("ui_last_tab", activeTab);
         renderGameTabs();
         flushPendingFlashes(activeTab);
       });
       ui.gameScreen.addEventListener("click", async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLButtonElement) || !target.dataset.action)
+        const origin = event.target;
+        if (!(origin instanceof HTMLElement)) return;
+        const target = origin.closest("button[data-game-action-id]");
+        if (!target) return;
+        const actionId = target.getAttribute("data-game-action-id");
+        if (!actionId)
           return;
-        await runQuickAction(target.dataset.action);
+        await runDatabaseAction(actionId);
       });
       renderProceduralControls();
       bindProceduralInputs();
       resetCreateFormToDefaults();
+      clearActionForm();
       window.refreshHomeState = refreshHomeState;
       window.refreshMuteState = refreshMuteState;
       refreshHomeState();
