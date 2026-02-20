@@ -1,1 +1,26 @@
-{}
+{
+  "name": "bodybuilding-frenzy",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.0",
+    "tailwindcss": "^4.2.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tailwindcss -i tailwind.css -o tailwind.out.css --watch",
+    "build": "tailwindcss -i tailwind.css -o tailwind.out.css --minify"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devbernardolopes/bodybuilding-frenzy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devbernardolopes/bodybuilding-frenzy/issues"
+  },
+  "homepage": "https://github.com/devbernardolopes/bodybuilding-frenzy#readme"
+}

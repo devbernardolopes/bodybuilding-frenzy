@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bodybuilding Frenzy Prototype</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="tailwind.out.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
   <body class="min-h-screen bg-slate-950 text-slate-100">
@@ -892,15 +892,17 @@
       }
 
       async function loadCatalogs() {
-        const jobs = Object.entries(ENTITY_CONFIG).map(async ([entity, cfg]) => {
-          const { data, error } = await window.supabaseClient
-            .from(cfg.table)
-            .select("id,key,name")
-            .eq("active", true)
-            .order("name", { ascending: true });
-          if (error) throw error;
-          catalogs[entity] = data || [];
-        });
+        const jobs = Object.entries(ENTITY_CONFIG).map(
+          async ([entity, cfg]) => {
+            const { data, error } = await window.supabaseClient
+              .from(cfg.table)
+              .select("id,key,name")
+              .eq("active", true)
+              .order("name", { ascending: true });
+            if (error) throw error;
+            catalogs[entity] = data || [];
+          },
+        );
         await Promise.all(jobs);
       }
       function getDefaultFeatures() {
@@ -963,14 +965,16 @@
         if (!catalogs.drugs.length && window.isUserLoggedIn) {
           await loadCatalogs();
         }
-        const jobs = Object.entries(ENTITY_CONFIG).map(async ([entity, cfg]) => {
-          const { data, error } = await window.supabaseClient
-            .from(cfg.characterTable)
-            .select(`value, ${cfg.table}:${cfg.fk}(key,name)`)
-            .eq("character_id", character.id);
-          if (error) throw error;
-          return [entity, data || []];
-        });
+        const jobs = Object.entries(ENTITY_CONFIG).map(
+          async ([entity, cfg]) => {
+            const { data, error } = await window.supabaseClient
+              .from(cfg.characterTable)
+              .select(`value, ${cfg.table}:${cfg.fk}(key,name)`)
+              .eq("character_id", character.id);
+            if (error) throw error;
+            return [entity, data || []];
+          },
+        );
         const results = await Promise.all(jobs);
 
         character.drugs = {};
@@ -981,7 +985,8 @@
 
         results.forEach(([entity, rows]) => {
           if (entity === "drugs" || entity === "hormones") {
-            const target = entity === "drugs" ? character.drugs : character.hormones;
+            const target =
+              entity === "drugs" ? character.drugs : character.hormones;
             rows.forEach((row) => {
               if (!row[cfgTableName(entity)]?.key) return;
               target[row[cfgTableName(entity)].key] = Number(row.value || 0);
@@ -1412,10 +1417,20 @@
         if (prev === next) return;
         setByPath(activeCharacter, path, next);
         if (path.startsWith("drugs.")) {
-          await saveEntityValue(activeCharacter.id, "drugs", path.split(".")[1], next);
+          await saveEntityValue(
+            activeCharacter.id,
+            "drugs",
+            path.split(".")[1],
+            next,
+          );
         }
         if (path.startsWith("hormones.")) {
-          await saveEntityValue(activeCharacter.id, "hormones", path.split(".")[1], next);
+          await saveEntityValue(
+            activeCharacter.id,
+            "hormones",
+            path.split(".")[1],
+            next,
+          );
         }
         const changedTab = getTabByPath(path);
         if (changedTab && changedTab !== activeTab) {
@@ -1457,21 +1472,9 @@
             await applyDelta("gameState.money", -30, "Nutrition cost");
           },
           test: async () => {
-            await applyDelta(
-              "drugs.testosterone",
-              10,
-              "Compound use",
-            );
-            await applyDelta(
-              "hormones.testosterone",
-              3,
-              "Hormone response",
-            );
-            await applyDelta(
-              "hormones.cortisol",
-              -1,
-              "Hormone response",
-            );
+            await applyDelta("drugs.testosterone", 10, "Compound use");
+            await applyDelta("hormones.testosterone", 3, "Hormone response");
+            await applyDelta("hormones.cortisol", -1, "Hormone response");
             await applyDelta("gameState.money", -80, "Compound cost");
           },
           nextDay: async () => {
@@ -1515,7 +1518,8 @@
         if (!window.isUserLoggedIn) {
           ui.newGameBtn.disabled = true;
           ui.continueBtn.disabled = true;
-          ui.homeStatus.textContent = "Login required to create or continue a game.";
+          ui.homeStatus.textContent =
+            "Login required to create or continue a game.";
           return;
         }
 
@@ -1534,7 +1538,8 @@
           console.error("Failed to refresh characters:", error);
           ui.newGameBtn.disabled = true;
           ui.continueBtn.disabled = true;
-          ui.homeStatus.textContent = "Could not load characters from Supabase.";
+          ui.homeStatus.textContent =
+            "Could not load characters from Supabase.";
         }
       }
       const formatCharacterBuild = (character) => {
