@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Procedural Body Prototype</title>
+
+    <style>
+      body {
+        background: #111;
+        color: #eee;
+        font-family: system-ui, sans-serif;
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+      }
+
+      #controls {
+        width: 320px;
+      }
+
+      label {
+        display: block;
+        margin: 6px 0 2px;
+      }
+
+      input,
+      select {
+        width: 100%;
+      }
+
+      svg {
+        background: #222;
+        border-radius: 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="controls">
+      <label>Age</label>
+      <input type="range" id="age" min="14" max="70" value="25" />
+
+      <label>Ethnicity</label>
+      <input type="range" id="ethnicity" min="0" max="100" value="40" />
+
+      <label>Height (cm)</label>
+      <input type="range" id="height" min="145" max="205" value="178" />
+
+      <label>Weight (kg)</label>
+      <input type="range" id="weight" min="45" max="140" value="82" />
+
+      <label>Body Fat (%)</label>
+      <input type="range" id="fat" min="4" max="40" value="14" />
+
+      <label>Gender</label>
+      <select id="gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+
+      <label>Somatotype</label>
+      <select id="somatotype">
+        <option value="ecto">Ectomorph</option>
+        <option value="meso">Mesomorph</option>
+        <option value="endo">Endomorph</option>
+      </select>
+    </div>
+
+    <svg id="char" viewBox="0 0 200 420" width="260" height="520">
+      <defs>
+        <filter id="fatBlur">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+      </defs>
+
+      <g id="root" transform="translate(100 40)">
+        <g id="posture">
+          <g id="scale">
+            <!-- Head -->
+            <circle id="head" cx="0" cy="0" r="18" />
+
+            <!-- Torso -->
+            <rect id="torso" x="-26" y="22" width="52" height="95" rx="26" />
+
+            <!-- Lats -->
+            <ellipse id="lats" cx="0" cy="72" rx="38" ry="36" />
+
+            <!-- Arms -->
+            <rect id="armL" x="-52" y="30" width="18" height="95" rx="9" />
+            <rect id="armR" x="34" y="30" width="18" height="95" rx="9" />
+
+            <!-- Forearms -->
+            <rect id="forearmL" x="-52" y="115" width="16" height="75" rx="8" />
+            <rect id="forearmR" x="36" y="115" width="16" height="75" rx="8" />
+
+            <!-- Legs -->
+            <rect id="legL" x="-26" y="118" width="22" height="125" rx="11" />
+            <rect id="legR" x="4" y="118" width="22" height="125" rx="11" />
+
+            <!-- Calves -->
+            <rect id="calfL" x="-26" y="230" width="20" height="90" rx="10" />
+            <rect id="calfR" x="6" y="230" width="20" height="90" rx="10" />
+
+            <!-- Fat overlay -->
+            <ellipse
+              id="fatOverlay"
+              cx="0"
+              cy="90"
+              rx="45"
+              ry="55"
+              filter="url(#fatBlur)"
+              opacity="0.25"
+            />
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <script>
+      const stats = {
+        age: 25,
+        ethnicity: 0.4,
+        height: 178,
+        weight: 82,
+        fat: 14,
+        gender: "male",
+        somatotype: "meso",
+      };
+
+      const somatotypes = {
+        ecto: { limb: 0.85, torso: 0.9, fat: 0.75, muscle: 0.9 },
+        meso: { limb: 1.1, torso: 1.05, fat: 1.0, muscle: 1.15 },
+        endo: { limb: 1.05, torso: 1.2, fat: 1.35, muscle: 0.95 },
+      };
+
+      const genderMorph = {
+        male: { shoulder: 1.15, hip: 0.95 },
+        female: { shoulder: 0.95, hip: 1.15 },
+      };
+
+      const els = {
+        scale: scale,
+        posture: posture,
+        torso,
+        lats,
+        armL,
+        armR,
+        forearmL,
+        forearmR,
+        legL,
+        legR,
+        calfL,
+        calfR,
+        head,
+        fatOverlay,
+      };
+
+      function skinTone(t) {
+        const a = [246, 237, 228];
+        const b = [75, 46, 30];
+        return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(",")})`;
+      }
+
+      function update() {
+        const s = somatotypes[stats.somatotype];
+        const g = genderMorph[stats.gender];
+
+        // Height
+        const hScale = stats.height / 180;
+        els.scale.setAttribute("transform", `scale(1,${hScale})`);
+
+        // Age posture
+        const ageT = Math.min(1, Math.max(0, (stats.age - 20) / 40));
+        els.posture.setAttribute(
+          "transform",
+          `skewX(${ageT * 4}) translate(0 ${ageT * 6})`,
+        );
+
+        // Base body proportions
+        const torsoW = 1.0 * s.torso;
+        const limbW = 1.0 * s.limb;
+
+        els.torso.setAttribute("transform", `scale(${torsoW},1)`);
+        els.lats.setAttribute("transform", `scale(${1.2 * torsoW},1)`);
+
+        // Gender morph
+        els.lats.setAttribute(
+          "transform",
+          `scale(${1.2 * torsoW * g.shoulder},1)`,
+        );
+        els.legL.setAttribute("transform", `scale(${g.hip},1)`);
+        els.legR.setAttribute("transform", `scale(${g.hip},1)`);
+
+        // Fat
+        const fatScale = 1 + stats.fat * 0.012 * s.fat;
+        els.fatOverlay.setAttribute("rx", 45 * fatScale);
+        els.fatOverlay.setAttribute("ry", 55 * fatScale);
+        els.fatOverlay.setAttribute("opacity", 0.15 + stats.fat * 0.01);
+
+        // Muscle approximation (weight - fat)
+        const lean = stats.weight * (1 - stats.fat / 100);
+        const muscleScale = 1 + (lean - 60) * 0.004 * s.muscle;
+
+        [armL, armR, forearmL, forearmR, legL, legR, calfL, calfR].forEach(
+          (el) =>
+            el.setAttribute("transform", `scale(${muscleScale * limbW},1)`),
+        );
+
+        // Skin tone
+        const skin = skinTone(stats.ethnicity);
+        document
+          .querySelectorAll("rect,circle,ellipse")
+          .forEach((el) => el.setAttribute("fill", skin));
+      }
+
+      function bind(id, key, scale = 1) {
+        const el = document.getElementById(id);
+        el.addEventListener("input", () => {
+          stats[key] = el.type === "range" ? el.value * scale : el.value;
+          update();
+        });
+      }
+
+      bind("age", "age");
+      bind("ethnicity", "ethnicity", 0.01);
+      bind("height", "height");
+      bind("weight", "weight");
+      bind("fat", "fat");
+      bind("gender", "gender");
+      bind("somatotype", "somatotype");
+
+      update();
+    </script>
+  </body>
+</html>
